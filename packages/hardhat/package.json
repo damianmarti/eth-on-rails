@@ -1,0 +1,47 @@
+{
+  "name": "@eth-on-rails/hardhat",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "account": "ts-node scripts/listAccount.ts",
+    "account:generate": "ts-node scripts/generateAccount.ts",
+    "account:import": "ts-node scripts/importAccount.ts",
+    "chain": "hardhat node --network hardhat --no-deploy",
+    "fork": "MAINNET_FORKING_ENABLED=true hardhat node --network hardhat --no-deploy",
+    "compile": "hardhat compile",
+    "deploy": "hardhat deploy",
+    "generate-abis": "ts-node scripts/generateContractsJson.ts",
+    "verify": "hardhat etherscan-verify",
+    "test": "hardhat test",
+    "format": "prettier --write './**/*.{ts,sol}'"
+  },
+  "devDependencies": {
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@typechain/ethers-v6": "^0.5.0",
+    "@typechain/hardhat": "^9.0.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "chai": "^4.3.0",
+    "dotenv": "^16.4.0",
+    "ethers": "^6.13.0",
+    "hardhat": "^2.22.0",
+    "hardhat-deploy": "^0.12.4",
+    "hardhat-deploy-ethers": "^0.4.2",
+    "prettier": "^3.3.0",
+    "qrcode": "^1.5.3",
+    "ts-node": "^10.9.0",
+    "typechain": "^8.3.0",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "@inquirer/input": "^2.1.0",
+    "@inquirer/password": "^2.1.0",
+    "envfile": "^7.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+<div data-controller="address-input">
+  <%= render ScaffoldEth::BaseInputComponent.new(
+        name: @name, value: @value, placeholder: @placeholder,
+        sol_type: "address",
+        data: { "address-input-target": "input", "action": "input->address-input#validate" }) do %>
+    <span class="hidden" data-address-input-target="blockie"></span>
+  <% end %>
+  <p class="hidden text-xs text-error mt-1 ml-3" data-address-input-target="error"></p>
+  <p class="hidden text-xs opacity-60 mt-1 ml-3" data-address-input-target="ens"></p>
+</div>

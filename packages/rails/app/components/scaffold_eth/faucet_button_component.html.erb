@@ -1,0 +1,9 @@
+<button class="btn btn-sm btn-primary rounded-full px-2 gap-1"
+        title="Grab funds from the local faucet"
+        data-controller="faucet-button"
+        data-faucet-button-amount-value="<%= @amount %>"
+        data-faucet-button-url-value="<%= "/api/faucet" %>"
+        data-action="click->faucet-button#drip">
+  <span data-faucet-button-target="icon">💧</span>
+  <span class="hidden sm:inline" data-faucet-button-target="label"></span>
+</button>

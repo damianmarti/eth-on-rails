@@ -1,0 +1,16 @@
+<div data-controller="ether-input">
+  <%# arg: false — the payable value is a tx param, not an ABI argument, so the
+      write serializer must not collect it. %>
+  <%= render ScaffoldEth::BaseInputComponent.new(
+        name: @name, value: @value, placeholder: @placeholder,
+        type: "text", sol_type: @sol_type, arg: false,
+        data: { "ether-input-target": "input", "action": "input->ether-input#onInput" }) do %>
+    <span class="text-base-content/50 mr-1" data-ether-input-target="prefix">Ξ</span>
+  <% end %>
+  <div class="flex justify-end">
+    <button type="button" class="text-xs opacity-60 hover:opacity-100 mt-1 mr-3"
+            data-ether-input-target="toggle" data-action="ether-input#toggleUnit">
+      in ETH (switch to USD)
+    </button>
+  </div>
+</div>

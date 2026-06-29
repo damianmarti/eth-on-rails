@@ -1,0 +1,27 @@
+{
+  "name": "app",
+  "private": true,
+  "devDependencies": {
+    "daisyui": "^5.6.5",
+    "esbuild": "^0.28.1"
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.23",
+    "@metamask/connect-evm": "^2.1.0",
+    "@reown/appkit": "^1.8.21",
+    "@reown/appkit-adapter-wagmi": "^1.8.21",
+    "@tailwindcss/cli": "^4.3.2",
+    "@wagmi/connectors": "^8.0.20",
+    "@wagmi/core": "^3.5.5",
+    "@walletconnect/ethereum-provider": "^2.23.10",
+    "ethereum-blockies-base64": "^1.0.2",
+    "porto": "^0.2.37",
+    "tailwindcss": "^4.3.2",
+    "viem": "^2.53.1"
+  }
+}

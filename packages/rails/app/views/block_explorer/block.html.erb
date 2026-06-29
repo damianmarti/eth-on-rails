@@ -1,0 +1,45 @@
+<% content_for :title, "Block ##{@block[:number]}" %>
+
+<div class="max-w-4xl mx-auto w-full px-4 py-6">
+  <%= link_to "← Back to explorer", block_explorer_path, class: "link text-sm" %>
+  <h1 class="text-2xl font-bold mt-2 mb-4">Block #<%= @block[:number] %></h1>
+
+  <div class="bg-base-100 rounded-2xl shadow p-5 space-y-2 text-sm">
+    <% {
+      "Block hash" => @block[:hash],
+      "Parent hash" => @block[:parent_hash],
+      "Timestamp" => "#{Time.at(@block[:timestamp]).utc} (#{block_time_ago(@block[:timestamp])})",
+      "Transactions" => @block[:tx_count],
+      "Gas used" => number_with_delimiter(@block[:gas_used]),
+      "Gas limit" => number_with_delimiter(@block[:gas_limit]),
+      "Base fee" => "#{format_gwei(@block[:base_fee_per_gas])} gwei",
+      "Size" => "#{@block[:size]} bytes"
+    }.each do |label, value| %>
+      <div class="flex flex-col sm:flex-row sm:gap-3">
+        <span class="opacity-60 w-40 shrink-0"><%= label %></span>
+        <span class="font-mono break-all"><%= value %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <h2 class="text-lg font-bold mt-6 mb-2">Transactions (<%= @transactions.size %>)</h2>
+  <div class="bg-base-100 rounded-2xl shadow overflow-x-auto">
+    <table class="table table-sm">
+      <thead><tr><th>Hash</th><th>From</th><th>To</th><th>Value</th><th></th></tr></thead>
+      <tbody>
+        <% @transactions.each do |tx| %>
+          <tr>
+            <td><%= link_to "#{tx[:hash][0,10]}…", block_explorer_tx_path(tx[:hash]), class: "link link-primary font-mono text-xs" %></td>
+            <td class="font-mono text-xs"><%= link_to short_address(tx[:from]), block_explorer_address_path(tx[:from]), class: "link" %></td>
+            <td class="font-mono text-xs">
+              <% if tx[:to] %><%= link_to short_address(tx[:to]), block_explorer_address_path(tx[:to]), class: "link" %>
+              <% else %><span class="badge badge-xs">contract creation</span><% end %>
+            </td>
+            <td class="font-mono text-xs"><%= format_eth(tx[:value]) %> ETH</td>
+            <td><%= tx_status_badge(tx[:status]) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

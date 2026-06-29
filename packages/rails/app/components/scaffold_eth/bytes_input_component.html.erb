@@ -1,0 +1,7 @@
+<div data-controller="bytes-input" data-bytes-input-length-value="<%= fixed_length %>">
+  <%= render ScaffoldEth::BaseInputComponent.new(
+        name: @name, value: @value, placeholder: "0x… (#{@sol_type})",
+        sol_type: @sol_type,
+        data: { "bytes-input-target": "input", "action": "input->bytes-input#validate" }) %>
+  <p class="hidden text-xs text-error mt-1 ml-3" data-bytes-input-target="error"></p>
+</div>

@@ -1,0 +1,42 @@
+<% content_for :title, "Faucet" %>
+
+<div class="max-w-lg mx-auto w-full px-4 py-10">
+  <h1 class="text-2xl font-bold text-center mb-1">💰 Local Faucet</h1>
+  <p class="text-sm opacity-70 text-center mb-6">
+    Send test ETH from the local dev account (signed server-side via eth.rb).
+  </p>
+
+  <div class="bg-base-100 rounded-2xl shadow p-6"
+       data-controller="faucet-form" data-faucet-form-url-value="<%= api_faucet_path %>">
+    <% if @error %>
+      <div class="alert alert-error mb-4"><span><%= @error %></span></div>
+    <% end %>
+
+    <div class="text-sm mb-4 flex items-center justify-between">
+      <span class="opacity-60">Faucet account</span>
+      <%= render ScaffoldEth::AddressComponent.new(address: @faucet_address, size: "sm", resolve_ens: false) %>
+    </div>
+    <div class="text-sm mb-6 flex items-center justify-between">
+      <span class="opacity-60">Faucet balance</span>
+      <span class="font-mono"><%= number_with_delimiter((@faucet_balance.to_f / 1e18).round(4)) %> ETH</span>
+    </div>
+
+    <label class="block text-xs font-medium opacity-70 mb-1 ml-1">Destination address</label>
+    <%= render ScaffoldEth::AddressInputComponent.new(name: "faucet_to") %>
+
+    <label class="block text-xs font-medium opacity-70 mb-1 ml-1 mt-3">Amount (ETH)</label>
+    <%= render ScaffoldEth::BaseInputComponent.new(name: "faucet_amount", value: "1", placeholder: "1.0", arg: false,
+          data: { "faucet-form-target": "amount" }) %>
+
+    <button type="button" class="btn btn-primary rounded-full w-full mt-5"
+            data-faucet-form-target="button" data-action="faucet-form#send">
+      Send ETH 💧
+    </button>
+
+    <p class="hidden mt-3 text-sm text-center" data-faucet-form-target="result"></p>
+  </div>
+
+  <p class="text-xs opacity-50 text-center mt-4">
+    Tip: the header 💧 button funds your connected wallet in one click.
+  </p>
+</div>

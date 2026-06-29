@@ -1,0 +1,14 @@
+<div class="mb-2">
+  <label class="block text-xs font-medium opacity-70 mb-1 ml-1"><%= label %></label>
+  <% if sol_type == "bool" %>
+    <select name="<%= field_name %>"
+            data-scaffold-arg-input data-scaffold-arg-name="<%= field_name %>"
+            data-scaffold-arg-type="bool"
+            class="select select-bordered select-sm rounded-full w-full">
+      <option value="false">false</option>
+      <option value="true">true</option>
+    </select>
+  <% else %>
+    <%= render input_component %>
+  <% end %>
+</div>

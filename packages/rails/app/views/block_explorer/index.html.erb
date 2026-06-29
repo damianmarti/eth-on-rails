@@ -1,0 +1,30 @@
+<% content_for :title, "Block Explorer" %>
+
+<div class="max-w-5xl mx-auto w-full px-4 py-6">
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <h1 class="text-2xl font-bold">🔍 Block Explorer</h1>
+    <span class="text-sm opacity-70">Latest block: <strong>#<%= @latest_number %></strong> · <%= active_chain.name %></span>
+  </div>
+
+  <%= form_with url: block_explorer_search_path, method: :get, class: "mb-6" do |f| %>
+    <div class="join w-full">
+      <%= f.text_field :q, placeholder: "Search by block #, tx hash, or address",
+            class: "input input-bordered join-item w-full font-mono text-sm" %>
+      <%= f.submit "Search", class: "btn btn-primary join-item" %>
+    </div>
+  <% end %>
+
+  <div class="bg-base-100 rounded-2xl shadow overflow-x-auto"
+       data-controller="block-stream" data-block-stream-url-value="<%= api_blocks_path %>">
+    <table class="table table-sm">
+      <thead>
+        <tr><th>Block</th><th>Age</th><th>Txns</th><th>Gas used</th><th>Miner</th></tr>
+      </thead>
+      <tbody data-block-stream-target="list">
+        <% @blocks.each do |b| %>
+          <%= render "block_explorer/block_row", b: b %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

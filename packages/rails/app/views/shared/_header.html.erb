@@ -1,0 +1,38 @@
+<header class="sticky top-0 z-20 navbar bg-base-100 border-b border-base-300 min-h-0 shrink-0 px-2 sm:px-4 shadow-sm">
+  <div class="navbar-start gap-2">
+    <%= link_to root_path, class: "flex items-center gap-2 ml-2 mr-4 shrink-0" do %>
+      <span class="text-2xl">🏗️</span>
+      <div class="flex flex-col leading-tight">
+        <span class="font-bold">ETH on Rails</span>
+        <span class="text-xs">Scaffold an Ethereum dapp</span>
+      </div>
+    <% end %>
+
+    <nav class="hidden lg:flex items-center gap-1">
+      <%= nav_link "Home", root_path %>
+      <%= nav_link "Debug Contracts", debug_path %>
+      <%= nav_link "Block Explorer", block_explorer_path %>
+    </nav>
+  </div>
+
+  <div class="navbar-end grow gap-2 pr-2">
+    <%# Reown AppKit connect button + network badge (Stimulus-driven) %>
+    <%= render ScaffoldEth::ConnectButtonComponent.new %>
+    <% if active_chain.local? %>
+      <button class="btn btn-sm btn-ghost rounded-full hidden sm:inline-flex"
+              data-controller="burner" data-action="click->burner#toggle"
+              title="Connect a throwaway local account">
+        🔥 <span data-burner-target="label">Burner</span>
+        <span class="font-mono text-xs opacity-70" data-burner-target="address"></span>
+      </button>
+      <%= render ScaffoldEth::FaucetButtonComponent.new %>
+    <% end %>
+  </div>
+</header>
+
+<%# mobile nav %>
+<nav class="lg:hidden flex items-center justify-center gap-1 bg-base-100 border-b border-base-300 py-1">
+  <%= nav_link "Home", root_path %>
+  <%= nav_link "Debug", debug_path %>
+  <%= nav_link "Explorer", block_explorer_path %>
+</nav>

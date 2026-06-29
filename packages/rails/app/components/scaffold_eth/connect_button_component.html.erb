@@ -1,0 +1,13 @@
+<div class="flex items-center gap-2" data-controller="connect-button">
+  <%# Network switcher (hidden until AppKit initializes / when on wrong network it highlights) %>
+  <appkit-network-button data-connect-button-target="network"></appkit-network-button>
+
+  <%# Connect / account button with balance %>
+  <appkit-button balance="<%= @show_balance ? 'show' : 'hide' %>"
+                 data-connect-button-target="button"></appkit-button>
+
+  <%# Fallback shown before the JS bundle boots %>
+  <noscript>
+    <span class="btn btn-primary btn-sm rounded-full">Connect Wallet</span>
+  </noscript>
+</div>

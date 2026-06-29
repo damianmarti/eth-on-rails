@@ -1,0 +1,35 @@
+<% content_for :title, "Debug Contracts" %>
+
+<div class="max-w-6xl mx-auto w-full px-4 py-6">
+  <div class="text-center mb-6">
+    <h1 class="text-2xl font-bold">Debug Contracts</h1>
+    <p class="text-sm opacity-70">
+      Auto-generated from each contract's ABI. <strong>Reads</strong> run on the server via eth.rb;
+      <strong>writes</strong> are signed in your browser via viem.
+    </p>
+  </div>
+
+  <% if @contract_names.empty? %>
+    <div class="alert alert-info max-w-xl mx-auto">
+      <span>
+        No contracts found. Deploy from the repo root with
+        <code class="px-1 bg-base-300 rounded">yarn deploy</code> (Hardhat) or
+        <code class="px-1 bg-base-300 rounded">yarn foundry:deploy</code> (Foundry).
+      </span>
+    </div>
+  <% else %>
+    <% if @contract_names.size > 1 %>
+      <div role="tablist" class="tabs tabs-boxed justify-center mb-6 inline-flex mx-auto">
+        <% @contract_names.each do |name| %>
+          <%= link_to name, debug_contract_path(name),
+                role: "tab",
+                class: "tab #{'tab-active' if name == @selected}" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if @contract %>
+      <%= render ScaffoldEth::DebugContractComponent.new(contract: @contract) %>
+    <% end %>
+  <% end %>
+</div>

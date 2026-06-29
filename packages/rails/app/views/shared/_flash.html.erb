@@ -1,0 +1,6 @@
+<% flash.each do |type, message| %>
+  <% next if message.blank? %>
+  <div class="alert <%= flash_alert_class(type) %> mx-auto my-2 max-w-3xl">
+    <span><%= message %></span>
+  </div>
+<% end %>

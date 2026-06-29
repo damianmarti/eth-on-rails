@@ -1,0 +1,50 @@
+<% content_for :title, "ETH on Rails" %>
+
+<div class="flex flex-col grow items-center pt-10 px-4">
+  <div class="text-center max-w-2xl">
+    <h1 class="text-2xl mb-1">Welcome to</h1>
+    <h1 class="text-4xl font-bold mb-4">🏗️ ETH on Rails</h1>
+    <p class="text-lg opacity-80">
+      A Scaffold-ETH&nbsp;2 toolkit built on <strong>Ruby on Rails</strong> +
+      <strong>eth.rb</strong>, with a faithful <strong>viem&nbsp;+&nbsp;Reown&nbsp;AppKit</strong> wallet layer.
+    </p>
+  </div>
+
+  <div class="mt-8 flex flex-col items-center gap-2 bg-base-100 rounded-2xl px-6 py-4 shadow">
+    <span class="text-sm opacity-70">Connected as</span>
+    <div data-controller="account-display" data-account-display-target="container">
+      <%= render ScaffoldEth::AddressComponent.new(address: nil, placeholder: "Connect your wallet") %>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-4 mt-10 w-full max-w-3xl">
+    <%= link_to debug_path, class: "card bg-base-100 shadow hover:shadow-lg transition p-6 text-center" do %>
+      <div class="text-3xl mb-2">🐛</div>
+      <div class="font-bold">Debug Contracts</div>
+      <p class="text-sm opacity-70 mt-1">
+        Auto-generated UI for every deployed contract. Reads run on the server via eth.rb;
+        writes are signed in your browser via viem.
+      </p>
+    <% end %>
+
+    <%= link_to block_explorer_path, class: "card bg-base-100 shadow hover:shadow-lg transition p-6 text-center" do %>
+      <div class="text-3xl mb-2">🔍</div>
+      <div class="font-bold">Block Explorer</div>
+      <p class="text-sm opacity-70 mt-1">
+        A local block explorer powered by eth.rb — browse blocks, transactions, and addresses.
+      </p>
+    <% end %>
+  </div>
+
+  <% if deployed_contract_names.any? %>
+    <div class="mt-8 text-sm opacity-70">
+      Deployed on <strong><%= active_chain.name %></strong>:
+      <%= deployed_contract_names.join(", ") %>
+    </div>
+  <% else %>
+    <div class="mt-8 text-sm opacity-70 text-center">
+      No contracts deployed yet. Run <code class="px-1 bg-base-300 rounded">yarn deploy</code>
+      (Hardhat) or <code class="px-1 bg-base-300 rounded">yarn foundry:deploy</code> from the repo root.
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,37 @@
+{
+  "name": "eth-on-rails",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source toolkit for building dapps on Ethereum — a Scaffold-ETH 2 port to Ruby on Rails.",
+  "license": "MIT",
+  "workspaces": {
+    "packages": [
+      "packages/hardhat",
+      "packages/foundry"
+    ]
+  },
+  "scripts": {
+    "account": "yarn workspace @eth-on-rails/hardhat account",
+    "account:generate": "yarn workspace @eth-on-rails/hardhat account:generate",
+    "account:import": "yarn workspace @eth-on-rails/hardhat account:import",
+    "chain": "yarn workspace @eth-on-rails/hardhat chain",
+    "fork": "yarn workspace @eth-on-rails/hardhat fork",
+    "deploy": "yarn workspace @eth-on-rails/hardhat deploy",
+    "verify": "yarn workspace @eth-on-rails/hardhat verify",
+    "hardhat:test": "yarn workspace @eth-on-rails/hardhat test",
+    "compile": "yarn workspace @eth-on-rails/hardhat compile",
+    "foundry:chain": "yarn workspace @eth-on-rails/foundry chain",
+    "foundry:fork": "yarn workspace @eth-on-rails/foundry fork",
+    "foundry:deploy": "yarn workspace @eth-on-rails/foundry deploy",
+    "foundry:test": "yarn workspace @eth-on-rails/foundry test",
+    "foundry:verify": "yarn workspace @eth-on-rails/foundry verify",
+    "foundry:account": "yarn workspace @eth-on-rails/foundry account",
+    "rails": "cd packages/rails && bin/rails",
+    "rails:server": "cd packages/rails && bin/dev",
+    "format": "yarn workspaces run format"
+  },
+  "packageManager": "yarn@1.22.5",
+  "engines": {
+    "node": ">=20.18.0"
+  }
+}

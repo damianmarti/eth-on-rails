@@ -1,0 +1,11 @@
+{
+  "_comment": "Manually add contracts NOT deployed by your local scripts (e.g. mainnet DAI). Same shape as deployed_contracts.json. Example below is commented out via the leading underscore key.",
+  "_example": {
+    "1": {
+      "DAI": {
+        "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+        "abi": []
+      }
+    }
+  }
+}

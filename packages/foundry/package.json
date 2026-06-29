@@ -1,0 +1,26 @@
+{
+  "name": "@eth-on-rails/foundry",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "account": "node scripts-js/listAccount.js",
+    "account:generate": "node scripts-js/generateAccount.js",
+    "account:import": "node scripts-js/importAccount.js",
+    "chain": "anvil --chain-id 31337",
+    "fork": "anvil --fork-url ${FORK_URL:-mainnet} --chain-id 31337",
+    "compile": "forge build",
+    "deploy": "node scripts-js/deploy.js && node scripts-js/generateContractsJson.js",
+    "generate-abis": "node scripts-js/generateContractsJson.js",
+    "verify": "node scripts-js/verify.js",
+    "test": "forge test",
+    "format": "forge fmt"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.0",
+    "envfile": "^7.1.0",
+    "ethers": "^6.13.0",
+    "@inquirer/input": "^2.1.0",
+    "@inquirer/password": "^2.1.0",
+    "qrcode": "^1.5.3"
+  }
+}

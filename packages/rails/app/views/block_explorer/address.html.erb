@@ -1,0 +1,32 @@
+<% content_for :title, "Address" %>
+
+<div class="max-w-4xl mx-auto w-full px-4 py-6">
+  <%= link_to "← Back to explorer", block_explorer_path, class: "link text-sm" %>
+  <h1 class="text-2xl font-bold mt-2 mb-4 flex items-center gap-2">
+    Address
+    <% if @info[:is_contract] %><span class="badge badge-secondary">Contract</span><% end %>
+  </h1>
+
+  <div class="bg-base-100 rounded-2xl shadow p-5 space-y-3 text-sm">
+    <div class="text-base">
+      <%= render ScaffoldEth::AddressComponent.new(address: @info[:address], format: "long", resolve_ens: false) %>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:gap-3">
+      <span class="opacity-60 w-32 shrink-0">Balance</span>
+      <span class="font-mono"><%= format_eth(@info[:balance]) %> ETH</span>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:gap-3">
+      <span class="opacity-60 w-32 shrink-0">Nonce / Txns</span>
+      <span class="font-mono"><%= @info[:nonce] %></span>
+    </div>
+    <% if @info[:is_contract] %>
+      <div class="flex flex-col sm:flex-row sm:gap-3">
+        <span class="opacity-60 w-32 shrink-0">Bytecode size</span>
+        <span class="font-mono"><%= number_with_delimiter(@info[:code_size]) %> bytes</span>
+      </div>
+      <% if deployed_contract_names.include?(name_for_address(@info[:address])) %>
+        <%= link_to "Open in Debug Contracts →", debug_contract_path(name_for_address(@info[:address])), class: "link link-primary" %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

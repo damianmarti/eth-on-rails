@@ -1,0 +1,11 @@
+<div data-controller="integer-input">
+  <%= render ScaffoldEth::BaseInputComponent.new(
+        name: @name, value: @value, placeholder: @placeholder,
+        type: "text", sol_type: @sol_type,
+        data: { "integer-input-target": "input", "action": "input->integer-input#validate" }) do %>
+    <button type="button" class="text-xs opacity-50 hover:opacity-100 font-mono"
+            title="Multiply by 10^18" data-integer-input-target="multiply"
+            data-action="integer-input#toggleMultiply">∗10¹⁸</button>
+  <% end %>
+  <p class="hidden text-xs text-error mt-1 ml-3" data-integer-input-target="error"></p>
+</div>

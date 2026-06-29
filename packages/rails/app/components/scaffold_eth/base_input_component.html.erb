@@ -1,0 +1,17 @@
+<div class="flex items-center border-2 border-base-300 bg-base-200 rounded-full text-base-content
+            focus-within:border-primary px-3 py-1">
+  <% if content %>
+    <span class="shrink-0 mr-1"><%= content %></span>
+  <% end %>
+  <input
+    type="<%= @type %>"
+    name="<%= @name %>"
+    value="<%= @value %>"
+    placeholder="<%= @placeholder %>"
+    autocomplete="off"
+    <%= "disabled" if @disabled %>
+    class="input input-ghost focus:outline-none focus:bg-transparent h-9 px-0 w-full font-mono
+           text-sm placeholder:text-base-content/40 border-0"
+    <%= "data-scaffold-arg-input" if arg? %>
+    <% data_attrs.each do |k, v| %>data-<%= k %>="<%= v %>" <% end %> />
+</div>

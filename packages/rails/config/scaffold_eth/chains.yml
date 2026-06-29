@@ -1,0 +1,126 @@
+# Chain metadata used by the server (eth.rb) layer and serialized to the browser.
+# Mirrors viem's chain definitions for the networks ETH-on-Rails supports out of the box.
+# `%{alchemy}` is interpolated with the configured Alchemy API key at load time.
+
+hardhat:
+  id: 31337
+  name: Hardhat
+  network: hardhat
+  rpc: http://127.0.0.1:8545
+  ws: ws://127.0.0.1:8545
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: ""
+  color: "#b8af0c"
+  testnet: true
+  local: true
+
+foundry:
+  id: 31337
+  name: Foundry
+  network: foundry
+  rpc: http://127.0.0.1:8545
+  ws: ws://127.0.0.1:8545
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: ""
+  color: "#b8af0c"
+  testnet: true
+  local: true
+
+mainnet:
+  id: 1
+  name: Ethereum
+  network: mainnet
+  rpc: https://eth-mainnet.alchemyapi.io/v2/%{alchemy}
+  ws: wss://eth-mainnet.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://etherscan.io
+  color: "#ff8b9e"
+  testnet: false
+
+sepolia:
+  id: 11155111
+  name: Sepolia
+  network: sepolia
+  rpc: https://eth-sepolia.g.alchemy.com/v2/%{alchemy}
+  ws: wss://eth-sepolia.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Sepolia Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://sepolia.etherscan.io
+  color: "#5f4bb6"
+  testnet: true
+
+optimism:
+  id: 10
+  name: Optimism
+  network: optimism
+  rpc: https://opt-mainnet.g.alchemy.com/v2/%{alchemy}
+  ws: wss://opt-mainnet.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://optimistic.etherscan.io
+  color: "#f01a37"
+  testnet: false
+
+optimismSepolia:
+  id: 11155420
+  name: Optimism Sepolia
+  network: optimism-sepolia
+  rpc: https://opt-sepolia.g.alchemy.com/v2/%{alchemy}
+  ws: wss://opt-sepolia.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Sepolia Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://sepolia-optimism.etherscan.io
+  color: "#f01a37"
+  testnet: true
+
+arbitrum:
+  id: 42161
+  name: Arbitrum One
+  network: arbitrum
+  rpc: https://arb-mainnet.g.alchemy.com/v2/%{alchemy}
+  ws: wss://arb-mainnet.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://arbiscan.io
+  color: "#28a0f0"
+  testnet: false
+
+arbitrumSepolia:
+  id: 421614
+  name: Arbitrum Sepolia
+  network: arbitrum-sepolia
+  rpc: https://arb-sepolia.g.alchemy.com/v2/%{alchemy}
+  ws: wss://arb-sepolia.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Sepolia Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://sepolia.arbiscan.io
+  color: "#28a0f0"
+  testnet: true
+
+base:
+  id: 8453
+  name: Base
+  network: base
+  rpc: https://base-mainnet.g.alchemy.com/v2/%{alchemy}
+  ws: wss://base-mainnet.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://basescan.org
+  color: "#0052ff"
+  testnet: false
+
+baseSepolia:
+  id: 84532
+  name: Base Sepolia
+  network: base-sepolia
+  rpc: https://base-sepolia.g.alchemy.com/v2/%{alchemy}
+  ws: wss://base-sepolia.g.alchemy.com/v2/%{alchemy}
+  currency: { name: Sepolia Ether, symbol: ETH, decimals: 18 }
+  block_explorer: https://sepolia.basescan.org
+  color: "#0052ff"
+  testnet: true
+
+polygon:
+  id: 137
+  name: Polygon
+  network: polygon
+  rpc: https://polygon-mainnet.g.alchemy.com/v2/%{alchemy}
+  ws: wss://polygon-mainnet.g.alchemy.com/v2/%{alchemy}
+  currency: { name: POL, symbol: POL, decimals: 18 }
+  block_explorer: https://polygonscan.com
+  color: "#92347e"
+  testnet: false

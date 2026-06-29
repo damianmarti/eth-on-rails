@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="scaffoldEth">
+  <head>
+    <title><%= content_for(:title) || "ETH on Rails" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ETH on Rails">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# Scaffold config bridged to the JS layer (wagmi/viem + Reown AppKit) %>
+    <%= tag.meta name: "scaffold-eth-config", content: scaffold_config.to_browser_json.to_json %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-base-200 text-base-content" data-controller="theme">
+    <%= render "shared/header" %>
+
+    <main class="flex-1 flex flex-col">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
+
+    <%= render "shared/footer" %>
+
+    <%# Toast/notification container for the transactor flow %>
+    <div id="scaffold-toasts" class="toast toast-end z-50" data-controller="transactor"></div>
+  </body>
+</html>

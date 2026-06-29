@@ -1,0 +1,9 @@
+<button type="button"
+        class="btn btn-ghost btn-sm font-normal <%= @class_name %>"
+        data-controller="scaffold-balance"
+        data-scaffold-balance-address-value="<%= @address %>"
+        data-action="click->scaffold-balance#toggleUnit"
+        title="Toggle ETH / USD">
+  <span data-scaffold-balance-target="value" class="font-mono">…</span>
+  <span data-scaffold-balance-target="unit" class="text-xs opacity-70">ETH</span>
+</button>

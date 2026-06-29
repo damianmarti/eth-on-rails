@@ -1,0 +1,39 @@
+# ETH-on-Rails configuration — the Ruby analogue of Scaffold-ETH 2's `scaffold.config.ts`.
+# Loaded by ScaffoldEth::Config (server) and serialized to the browser for the JS layer.
+
+default: &default
+  # Networks the app targets. The FIRST entry is the primary/target network.
+  # Keys must match ScaffoldEth::Chains (config/scaffold_eth/chains.yml).
+  target_networks:
+    - hardhat
+
+  # How often (ms) the frontend re-reads contract state / balances.
+  polling_interval: 30000
+
+  # WalletConnect / Reown project id. Get yours at https://dashboard.reown.com
+  wallet_connect_project_id: <%= ENV.fetch("WALLET_CONNECT_PROJECT_ID", "3a8170812b534d0ff9d794f19a901d64") %>
+
+  # Default RPC provider key (Alchemy). The bundled key is a public Scaffold-ETH key.
+  alchemy_api_key: <%= ENV.fetch("ALCHEMY_API_KEY", "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF") %>
+
+  # Only show the burner wallet connector on the local (hardhat/anvil) network.
+  only_local_burner_wallet: true
+
+  # Per-network RPC URL overrides, e.g. { "hardhat": "http://127.0.0.1:8545" }
+  rpc_overrides: {}
+
+  # The chainId used by server-side reads / faucet / block explorer (defaults to the
+  # primary target network's chainId).
+  # active_chain_id: 31337
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+  target_networks:
+    - sepolia
+  only_local_burner_wallet: false

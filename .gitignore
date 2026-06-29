@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.yarn/
+
+# Hardhat
+packages/hardhat/artifacts/
+packages/hardhat/cache/
+packages/hardhat/deployments/
+packages/hardhat/typechain-types/
+
+# Foundry
+packages/foundry/out/
+packages/foundry/cache/
+packages/foundry/broadcast/
+packages/foundry/lib/
+
+# Generated contract artifacts (regenerated on deploy)
+packages/rails/config/contracts/deployed_contracts.json
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log
+
+# Rails (see packages/rails/.gitignore for the rest)
+packages/rails/tmp/
+packages/rails/log/
+packages/rails/storage/
+packages/rails/.bundle/
+
+# OS
+.DS_Store

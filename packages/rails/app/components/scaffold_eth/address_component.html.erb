@@ -1,0 +1,21 @@
+<% if address? %>
+  <div class="inline-flex items-center gap-1.5" data-controller="address" data-address-value="<%= checksummed %>">
+    <%= render ScaffoldEth::BlockieAvatarComponent.new(address: checksummed, size: blockie_size) %>
+
+    <% if explorer_url %>
+      <%= link_to display_label, explorer_url,
+            class: "font-mono font-medium #{text_size_class} hover:underline",
+            target: (helpers.active_chain.local? ? "_self" : "_blank"),
+            rel: "noopener" %>
+    <% else %>
+      <span class="font-mono font-medium <%= text_size_class %>"><%= display_label %></span>
+    <% end %>
+
+    <button type="button" class="opacity-60 hover:opacity-100"
+            title="Copy address" data-action="address#copy">
+      <span data-address-target="copyIcon">📋</span>
+    </button>
+  </div>
+<% else %>
+  <span class="text-sm opacity-60 italic"><%= @placeholder || "—" %></span>
+<% end %>
