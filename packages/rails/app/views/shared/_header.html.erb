@@ -10,6 +10,7 @@
 
     <nav class="hidden lg:flex items-stretch self-stretch">
       <%= nav_link "Home", root_path %>
+      <%= nav_link "Example", example_path, icon: sparkles_icon %>
       <%= nav_link "Debug Contracts", debug_path, icon: bug_ant_icon %>
     </nav>
   </div>
@@ -32,5 +33,6 @@
 <%# mobile nav %>
 <nav class="lg:hidden flex items-stretch justify-center bg-base-100 border-b border-base-300 h-10">
   <%= nav_link "Home", root_path %>
+  <%= nav_link "Example", example_path, icon: sparkles_icon %>
   <%= nav_link "Debug Contracts", debug_path, icon: bug_ant_icon %>
 </nav>

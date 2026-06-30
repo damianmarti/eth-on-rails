@@ -29,11 +29,16 @@ export default class extends Controller {
 
   prepend(log) {
     if (!this.hasListTarget) return;
+    const hash = log.transactionHash || "";
+    const key = `${hash}-${log.logIndex ?? ""}`;
+    // Skip if this event is already shown (e.g. also rendered by event-history).
+    if (this.listTarget.querySelector(`[data-event-key="${key}"]`)) return;
+
     // Normalize bigints to strings so address detection / display work.
     const args = {};
     for (const [k, v] of Object.entries(log.args || {})) args[k] = typeof v === "bigint" ? v.toString() : v;
-    const hash = log.transactionHash || "";
     const row = document.createElement("tr");
+    row.dataset.eventKey = key;
     row.innerHTML = `
       <td class="font-mono text-xs align-top">${log.blockNumber ?? "-"}</td>
       <td class="text-xs align-top">${formatArgs(args)}</td>

@@ -59,8 +59,23 @@ cd packages/rails && bin/dev      # (terminal 3) -> http://localhost:3000
 ```
 
 Open <http://localhost:3000>, click **🔥 Burner** to connect a throwaway local
-account, hit **💧** to fund it from the faucet, then visit **Debug Contracts** to
-read/write `YourContract` and **Block Explorer** to inspect your transactions.
+account, hit **💧** to fund it from the faucet, then visit **Example** for a guided
+read/write/event walkthrough, **Debug Contracts** to interact with every function
+of `YourContract`, and **Block Explorer** to inspect your transactions.
+
+## The example page
+
+The **Example** page (`/example`, see `app/views/example/index.html.erb`) is a small,
+copy-pasteable walkthrough built entirely from the scaffold helpers. It shows the
+three things every dapp does, against the sample `YourContract`:
+
+1. **Read** the current `greeting` (live, refreshes after each transaction).
+2. **Write** a new greeting (signed in your browser), with an optional ETH value
+   that flips the contract's `premium` flag.
+3. **Watch the change log** — every `GreetingChange` event, newest first, with the
+   `greetingSetter` rendered as an Address (blockie + ENS + copy + explorer link).
+
+Use it as the template for your own pages. The patterns it uses are documented below.
 
 ## Repo layout
 
@@ -99,6 +114,94 @@ ABI/address. Add contracts you didn't deploy (e.g. mainnet DAI) to
 
 Other scripts: `yarn account` / `yarn account:generate` / `yarn account:import`,
 `yarn chain` / `yarn fork`, `yarn verify` (and the `yarn foundry:*` equivalents).
+
+## Interacting with contracts
+
+Contracts are referenced **by name** (the key in `deployed_contracts.json`, e.g.
+`YourContract`) — never by hardcoded address/ABI. Reads can run either in the browser
+(viem) or on the server (eth.rb); **writes are always signed in the browser**.
+
+### Reading from a contract
+
+**In a view (live, client-side via viem)** — the `scaffold-read-contract` controller
+calls the function and writes the result into its `output` target, refreshing on a
+poll and after every confirmed transaction (`watch: true`). Address results render
+with the Address component automatically:
+
+```erb
+<div data-controller="scaffold-read-contract"
+     data-scaffold-read-contract-contract-value="YourContract"
+     data-scaffold-read-contract-function-value="greeting"
+     data-scaffold-read-contract-args-value="[]"
+     data-scaffold-read-contract-watch-value="true">
+  <span data-scaffold-read-contract-target="output">…</span>
+</div>
+```
+
+**On the server (eth.rb)** — use `ScaffoldEth::Reader` in a view, controller, or job:
+
+```ruby
+ScaffoldEth::Reader.new.read_json("YourContract", "greeting")        # => "Building Unstoppable Apps!!!"
+ScaffoldEth::Reader.new.read_json("YourContract", "userGreetingCounter", "0xabc…")
+```
+
+…or hit the JSON API the controllers use:
+`GET /api/read?contract=YourContract&function=greeting&args[]=0xabc…`
+
+### Writing to a contract
+
+Wrap your inputs and a submit button in a `scaffold-write-contract` controller. It
+collects the function arguments from every `[data-scaffold-arg-input]` element inside
+its scope (in DOM order, typed via `data-scaffold-arg-type`), simulates the call,
+asks the wallet to sign, and shows a pending → confirmed toast (`transactor`). The
+scaffold input components already emit the right data attributes:
+
+```erb
+<div data-controller="scaffold-write-contract"
+     data-scaffold-write-contract-contract-value="YourContract"
+     data-scaffold-write-contract-function-value="setGreeting">
+  <%= render ScaffoldEth::BaseInputComponent.new(name: "newGreeting", sol_type: "string") %>
+
+  <%# optional: ETH sent with a payable function %>
+  <%= render ScaffoldEth::EtherInputComponent.new(name: "value") %>
+
+  <button data-scaffold-write-contract-target="button"
+          data-action="scaffold-write-contract#submit">Send 💸</button>
+</div>
+```
+
+For typed inputs use `AddressInputComponent`, `IntegerInputComponent`,
+`BytesInputComponent`, etc. — or let the Debug page's `ContractInputComponent` pick
+the right one from the ABI. Writes are **never** exposed as a server endpoint.
+
+### Getting event logs
+
+Combine two controllers on one list: `scaffold-event-history` backfills past events
+from the server (eth.rb `getLogs`, decoded) and `scaffold-watch-event` appends new
+ones live (viem). Rows are de-duplicated by `txHash`/`logIndex`, and address args
+render with the Address component:
+
+```erb
+<div data-controller="scaffold-event-history scaffold-watch-event"
+     data-scaffold-event-history-contract-value="YourContract"
+     data-scaffold-event-history-event-value="GreetingChange"
+     data-scaffold-watch-event-contract-value="YourContract"
+     data-scaffold-watch-event-event-value="GreetingChange">
+  <table class="table table-sm">
+    <thead><tr><th>Block</th><th>Change</th><th>Tx</th></tr></thead>
+    <tbody data-scaffold-event-history-target="list"
+           data-scaffold-watch-event-target="list"></tbody>
+  </table>
+</div>
+```
+
+**On the server (eth.rb)** — fetch decoded events directly:
+
+```ruby
+ScaffoldEth::Events.new.get_events("YourContract", "GreetingChange", from_block: 0)
+```
+
+…or via the API: `GET /api/events?contract=YourContract&event=GreetingChange&from_block=0`
 
 ## Deployment
 
