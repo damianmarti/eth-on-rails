@@ -15,9 +15,16 @@ module ScaffoldEth
 
     # Eager initial value (server-rendered) so it shows instantly.
     def initial_value
-      ScaffoldEth::Reader.new(@contract.chain_id).read_json(@contract.name, name)
-    rescue StandardError => e
-      "⚠️ #{e.message}"
+      @initial_value ||= begin
+        ScaffoldEth::Reader.new(@contract.chain_id).read_json(@contract.name, name)
+      rescue StandardError => e
+        "⚠️ #{e.message}"
+      end
+    end
+
+    # True when the value is a single Ethereum address (render via AddressComponent).
+    def address_value?
+      initial_value.is_a?(String) && initial_value.match?(/\A0x[0-9a-fA-F]{40}\z/)
     end
 
     def contract_name = @contract.name

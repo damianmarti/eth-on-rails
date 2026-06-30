@@ -1,9 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
 import { collectArgs } from "../lib/args";
+import { renderValue } from "../lib/address_chip";
 
 // Reads a view function on the SERVER via eth.rb (/api/read), showcasing the
 // Ruby layer on the Debug page's read section. Args are collected from the
-// inputs inside this controller's scope.
+// inputs inside this controller's scope. Address-typed results render via the
+// Address component.
 export default class extends Controller {
   static values = { contract: String, function: String };
   static targets = ["output"];
@@ -19,15 +21,10 @@ export default class extends Controller {
     try {
       const res = await fetch(`/api/read?${params.toString()}`, { headers: { Accept: "application/json" } });
       const data = await res.json();
-      this.outputTarget.textContent = data.error ? `⚠️ ${data.error}` : formatValue(data.value);
+      if (data.error) this.outputTarget.textContent = `⚠️ ${data.error}`;
+      else renderValue(this.outputTarget, data.value);
     } catch (err) {
       this.outputTarget.textContent = `⚠️ ${err.message}`;
     }
   }
-}
-
-function formatValue(value) {
-  if (Array.isArray(value)) return `[${value.join(", ")}]`;
-  if (value && typeof value === "object") return JSON.stringify(value);
-  return String(value);
 }

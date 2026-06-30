@@ -35,8 +35,8 @@ module BlockExplorerHelper
     return "".html_safe if function.nil?
 
     parts = []
-    parts << tag.span(function[:name], class: "mr-1 font-medium") if function[:name].present?
-    parts << tag.span(function[:selector], class: "badge badge-ghost badge-xs font-mono") if function[:selector]
+    parts << tag.span(function[:name], class: "mr-1") if function[:name].present?
+    parts << tag.span(function[:selector], class: "badge badge-primary font-bold text-xs font-mono") if function[:selector]
     safe_join(parts)
   end
 

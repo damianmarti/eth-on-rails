@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { pollingInterval } from "../lib/config";
+import { renderValue } from "../lib/address_chip";
 
 // Auto-refreshing contract variable (zero-input view fn). Reads server-side via
 // eth.rb (/api/read): polls, refreshes after each confirmed tx, and on the
@@ -25,7 +26,11 @@ export default class extends Controller {
       const params = new URLSearchParams({ contract: this.contractValue, function: this.functionValue });
       const res = await fetch(`/api/read?${params.toString()}`, { headers: { Accept: "application/json" } });
       const data = await res.json();
-      this.outputTarget.textContent = data.error ? `⚠️ ${data.error}` : formatValue(data.value);
+      if (data.error) {
+        this.outputTarget.textContent = `⚠️ ${data.error}`;
+      } else {
+        renderValue(this.outputTarget, data.value);
+      }
     } catch (_) {
       /* keep the previous value on transient errors */
     } finally {
@@ -34,8 +39,3 @@ export default class extends Controller {
   }
 }
 
-function formatValue(value) {
-  if (Array.isArray(value)) return `[${value.join(", ")}]`;
-  if (value && typeof value === "object") return JSON.stringify(value);
-  return String(value);
-}

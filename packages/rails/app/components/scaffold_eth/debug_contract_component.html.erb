@@ -1,39 +1,43 @@
 <div class="grid lg:grid-cols-3 gap-6">
   <%# ---- Left column: contract info + auto-refreshing variables ---- %>
-  <div class="lg:col-span-1 space-y-6">
-    <div class="bg-base-100 rounded-2xl shadow p-4">
-      <h2 class="font-bold text-lg mb-2"><%= contract.name %></h2>
-      <div class="text-sm mb-2">
+  <div class="lg:col-span-1 flex flex-col gap-6">
+    <div class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5">
+      <div class="flex items-center gap-2">
+        <h2 class="font-bold text-lg"><%= contract.name %></h2>
+      </div>
+      <div class="text-sm mt-1">
         <%= render ScaffoldEth::AddressComponent.new(address: contract.address, size: "sm", resolve_ens: false) %>
       </div>
-      <div class="text-sm flex items-center gap-1">
-        <span class="opacity-60">Balance:</span>
+      <div class="text-sm flex items-center gap-1 mt-1">
+        <span class="font-bold">Balance:</span>
         <%= render ScaffoldEth::BalanceComponent.new(address: contract.address) %>
       </div>
       <div class="text-sm mt-1">
-        <span class="opacity-60">Network:</span>
+        <span class="font-bold">Network:</span>
         <span style="color: <%= helpers.active_chain.color %>"><%= helpers.active_chain.name %></span>
       </div>
     </div>
 
     <%# Contract Variables — zero-input view functions, auto-refreshing (eth.rb) %>
     <% if variable_functions.any? %>
-      <div class="bg-base-100 rounded-2xl shadow p-4">
+      <div class="bg-secondary border border-base-300 rounded-3xl shadow-lg shadow-base-300 px-6 py-5">
         <div class="flex items-center gap-2 mb-2">
           <span class="badge badge-sm badge-ghost">eth.rb · server</span>
         </div>
-        <% variable_functions.each do |fn| %>
-          <%= render ScaffoldEth::DisplayVariableComponent.new(contract: contract, function: fn) %>
-        <% end %>
+        <div class="divide-y divide-base-content/10">
+          <% variable_functions.each do |fn| %>
+            <%= render ScaffoldEth::DisplayVariableComponent.new(contract: contract, function: fn) %>
+          <% end %>
+        </div>
       </div>
     <% end %>
   </div>
 
   <%# ---- Right column: Read (inputs) + Write ---- %>
-  <div class="lg:col-span-2 space-y-6">
+  <div class="lg:col-span-2 flex flex-col gap-6">
     <%# ---------- READ (input-taking, server-side via eth.rb) ---------- %>
-    <section class="bg-base-100 rounded-2xl shadow p-4 relative">
-      <span class="absolute -top-3 left-4 badge badge-primary badge-sm">Read</span>
+    <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5 relative mt-4">
+      <div class="absolute -top-[14px] left-6 bg-base-300 px-4 py-1 text-sm font-medium shadow-sm">Read</div>
       <div class="flex items-center gap-2 mb-3 mt-1">
         <span class="badge badge-sm badge-ghost">eth.rb · server</span>
       </div>
@@ -63,8 +67,8 @@
     </section>
 
     <%# ---------- WRITE (browser-signed via viem) ---------- %>
-    <section class="bg-base-100 rounded-2xl shadow p-4 relative">
-      <span class="absolute -top-3 left-4 badge badge-primary badge-sm">Write</span>
+    <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5 relative mt-4">
+      <div class="absolute -top-[14px] left-6 bg-base-300 px-4 py-1 text-sm font-medium shadow-sm">Write</div>
       <div class="flex items-center gap-2 mb-3 mt-1">
         <span class="badge badge-sm badge-ghost">viem · wallet</span>
       </div>
@@ -103,7 +107,7 @@
 
     <%# ---------- EVENTS ---------- %>
     <% events.each do |event| %>
-      <section class="bg-base-100 rounded-2xl shadow p-4"
+      <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5"
                data-controller="scaffold-event-history scaffold-watch-event"
                data-scaffold-event-history-contract-value="<%= contract.name %>"
                data-scaffold-event-history-event-value="<%= event['name'] %>"

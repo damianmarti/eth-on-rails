@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import { formatArgs } from "../lib/address_chip";
 import { watchContractEvent } from "@wagmi/core";
 import { wagmiConfig } from "../lib/wagmi";
 import { getContract } from "../lib/contracts";
@@ -28,10 +29,15 @@ export default class extends Controller {
 
   prepend(log) {
     if (!this.hasListTarget) return;
-    const args = log.args || {};
-    const row = document.createElement("div");
-    row.className = "text-xs font-mono py-1 border-b border-base-300";
-    row.textContent = JSON.stringify(args, (_, v) => (typeof v === "bigint" ? v.toString() : v));
+    // Normalize bigints to strings so address detection / display work.
+    const args = {};
+    for (const [k, v] of Object.entries(log.args || {})) args[k] = typeof v === "bigint" ? v.toString() : v;
+    const hash = log.transactionHash || "";
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="font-mono text-xs align-top">${log.blockNumber ?? "-"}</td>
+      <td class="text-xs align-top">${formatArgs(args)}</td>
+      <td class="font-mono text-xs align-top"><a class="link" href="/blockexplorer/tx/${hash}">${hash.slice(0, 10)}…</a></td>`;
     this.listTarget.prepend(row);
   }
 }

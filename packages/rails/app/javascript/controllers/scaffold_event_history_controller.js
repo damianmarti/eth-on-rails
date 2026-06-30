@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import { formatArgs } from "../lib/address_chip";
 
 // Loads decoded historical events from the Rails API (/api/events, backed by
 // eth.rb getLogs). The analogue of SE-2's useScaffoldEventHistory.
@@ -42,9 +43,9 @@ export default class extends Controller {
       .forEach((ev) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td class="font-mono text-xs">${ev.blockNumber ?? "-"}</td>
-          <td class="font-mono text-xs">${JSON.stringify(ev.args)}</td>
-          <td class="font-mono text-xs"><a class="link" href="/blockexplorer/tx/${ev.transactionHash}">${(ev.transactionHash || "").slice(0, 10)}…</a></td>`;
+          <td class="font-mono text-xs align-top">${ev.blockNumber ?? "-"}</td>
+          <td class="text-xs align-top">${formatArgs(ev.args)}</td>
+          <td class="font-mono text-xs align-top"><a class="link" href="/blockexplorer/tx/${ev.transactionHash}">${(ev.transactionHash || "").slice(0, 10)}…</a></td>`;
         this.listTarget.appendChild(row);
       });
   }

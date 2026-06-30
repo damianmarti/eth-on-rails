@@ -23,19 +23,19 @@
   </div>
 
   <h2 class="text-lg font-bold mt-6 mb-2">Transactions (<%= @transactions.size %>)</h2>
-  <div class="bg-base-100 rounded-2xl shadow overflow-x-auto">
-    <table class="table table-sm">
-      <thead><tr><th>Hash</th><th>From</th><th>To</th><th>Value</th><th></th></tr></thead>
+  <div class="overflow-x-auto w-full border border-base-300">
+    <table class="table bg-base-100 table-zebra table-sm">
+      <thead><tr class="text-primary-content"><th class="bg-primary">Hash</th><th class="bg-primary">From</th><th class="bg-primary">To</th><th class="bg-primary">Value</th><th class="bg-primary"></th></tr></thead>
       <tbody>
         <% @transactions.each do |tx| %>
-          <tr>
+          <tr class="hover">
             <td><%= link_to "#{tx[:hash][0,10]}…", block_explorer_tx_path(tx[:hash]), class: "link link-primary font-mono text-xs" %></td>
-            <td class="font-mono text-xs"><%= link_to short_address(tx[:from]), block_explorer_address_path(tx[:from]), class: "link" %></td>
-            <td class="font-mono text-xs">
-              <% if tx[:to] %><%= link_to short_address(tx[:to]), block_explorer_address_path(tx[:to]), class: "link" %>
-              <% else %><span class="badge badge-xs">contract creation</span><% end %>
+            <td><%= render ScaffoldEth::AddressComponent.new(address: tx[:from], size: "xs", resolve_ens: false) %></td>
+            <td>
+              <% if tx[:to] %><%= render ScaffoldEth::AddressComponent.new(address: tx[:to], size: "xs", resolve_ens: false) %>
+              <% else %><span class="badge badge-xs badge-ghost">Contract Creation</span><% end %>
             </td>
-            <td class="font-mono text-xs"><%= format_eth(tx[:value]) %> ETH</td>
+            <td class="font-mono text-xs"><%= format_eth(tx[:value]) %> <%= active_chain.symbol %></td>
             <td><%= tx_status_badge(tx[:status]) %></td>
           </tr>
         <% end %>

@@ -14,19 +14,19 @@
     </div>
   <% end %>
 
-  <div class="bg-base-100 rounded-2xl shadow overflow-x-auto"
+  <div class="overflow-x-auto w-full border border-base-300 shadow-lg"
        data-controller="block-stream" data-block-stream-url-value="<%= api_blocks_path %>"
        data-block-stream-latest-value="<%= @latest_number %>" data-block-stream-page-value="<%= @page %>">
-    <table class="table table-sm">
+    <table class="table bg-base-100 table-zebra w-full md:table-md table-sm">
       <thead>
-        <tr class="text-xs">
-          <th>Transaction Hash</th>
-          <th>Function Called</th>
-          <th>Block</th>
-          <th>Time Mined</th>
-          <th>From</th>
-          <th>To</th>
-          <th class="text-end">Value (<%= active_chain.symbol %>)</th>
+        <tr class="text-sm text-primary-content">
+          <th class="bg-primary">Transaction Hash</th>
+          <th class="bg-primary">Function Called</th>
+          <th class="bg-primary">Block</th>
+          <th class="bg-primary">Time Mined</th>
+          <th class="bg-primary">From</th>
+          <th class="bg-primary">To</th>
+          <th class="bg-primary text-end">Value (<%= active_chain.symbol %>)</th>
         </tr>
       </thead>
       <tbody>
@@ -34,7 +34,7 @@
           <tr><td colspan="7" class="text-center opacity-60 py-6">No transactions yet.</td></tr>
         <% end %>
         <% @transactions.each do |tx| %>
-          <tr>
+          <tr class="hover">
             <td>
               <%= link_to "#{tx[:hash][0, 12]}…", block_explorer_tx_path(tx[:hash]),
                     class: "link link-primary font-mono text-xs" %>

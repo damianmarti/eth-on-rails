@@ -1,9 +1,8 @@
-<div class="py-2 first:pt-0"
-     data-controller="display-variable"
+<div class="py-2" data-controller="display-variable"
      data-display-variable-contract-value="<%= contract_name %>"
      data-display-variable-function-value="<%= name %>">
-  <div class="flex items-center gap-2">
-    <span class="font-medium text-sm"><%= name %></span>
+  <div class="flex items-center gap-1.5">
+    <span class="font-bold text-sm"><%= name %></span>
     <button type="button" class="opacity-40 hover:opacity-100" title="Refresh"
             data-action="display-variable#refresh" data-display-variable-target="refresh">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
@@ -13,5 +12,5 @@
       </svg>
     </button>
   </div>
-  <div class="font-mono text-sm break-all whitespace-pre-wrap" data-display-variable-target="output"><%= initial_value %></div>
+  <div class="font-mono text-sm break-all" data-display-variable-target="output"><% if address_value? %><%= render ScaffoldEth::AddressComponent.new(address: initial_value, size: "sm", resolve_ens: false) %><% else %><%= initial_value %><% end %></div>
 </div>

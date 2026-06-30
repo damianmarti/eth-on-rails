@@ -6,22 +6,32 @@
     Transaction <%= tx_status_badge(@transaction[:status]) %>
   </h1>
 
-  <div class="bg-base-100 rounded-2xl shadow p-5 space-y-2 text-sm">
-    <% [
-      ["Tx hash", @transaction[:hash]],
-      ["Block", link_to("##{@transaction[:block_number]}", block_explorer_block_path(@transaction[:block_number]), class: "link")],
-      ["From", link_to(@transaction[:from], block_explorer_address_path(@transaction[:from]), class: "link")],
-      ["To", @transaction[:to] ? link_to(@transaction[:to], block_explorer_address_path(@transaction[:to]), class: "link") : "Contract creation: #{@transaction[:contract_address]}"],
-      ["Value", "#{format_eth(@transaction[:value])} ETH"],
-      ["Gas used", number_with_delimiter(@transaction[:gas_used])],
-      ["Gas price", "#{format_gwei(@transaction[:gas_price])} gwei"],
-      ["Nonce", @transaction[:nonce]],
-    ].each do |label, value| %>
-      <div class="flex flex-col sm:flex-row sm:gap-3">
-        <span class="opacity-60 w-32 shrink-0"><%= label %></span>
-        <span class="font-mono break-all"><%= value %></span>
-      </div>
-    <% end %>
+  <div class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary p-5 space-y-2 text-sm">
+    <%= render "row", label: "Tx hash", value: @transaction[:hash] %>
+    <%= render "row", label: "Block", value: link_to("##{@transaction[:block_number]}", block_explorer_block_path(@transaction[:block_number]), class: "link") %>
+
+    <div class="flex flex-col sm:flex-row sm:gap-3">
+      <span class="opacity-60 w-32 shrink-0">From</span>
+      <%= render ScaffoldEth::AddressComponent.new(address: @transaction[:from], size: "sm", resolve_ens: false) %>
+    </div>
+    <div class="flex flex-col sm:flex-row sm:gap-3">
+      <span class="opacity-60 w-32 shrink-0">To</span>
+      <% if @transaction[:to] %>
+        <%= render ScaffoldEth::AddressComponent.new(address: @transaction[:to], size: "sm", resolve_ens: false) %>
+      <% else %>
+        <span class="flex items-center gap-2">
+          <span class="badge badge-ghost badge-sm">Contract Creation</span>
+          <% if @transaction[:contract_address] %>
+            <%= render ScaffoldEth::AddressComponent.new(address: @transaction[:contract_address], size: "sm", resolve_ens: false) %>
+          <% end %>
+        </span>
+      <% end %>
+    </div>
+
+    <%= render "row", label: "Value", value: "#{format_eth(@transaction[:value])} #{active_chain.symbol}" %>
+    <%= render "row", label: "Gas used", value: number_with_delimiter(@transaction[:gas_used]) %>
+    <%= render "row", label: "Gas price", value: "#{format_gwei(@transaction[:gas_price])} gwei" %>
+    <%= render "row", label: "Nonce", value: @transaction[:nonce] %>
 
     <% if @transaction[:function] && @transaction[:function][:name] %>
       <div class="flex flex-col sm:flex-row sm:gap-3">
@@ -36,9 +46,13 @@
           <span class="opacity-60 w-32 shrink-0">Arguments</span>
           <div class="flex-1 space-y-1">
             <% @transaction[:function][:args].each do |arg| %>
-              <div class="font-mono text-xs break-all">
+              <div class="font-mono text-xs break-all flex items-center gap-1 flex-wrap">
                 <span class="opacity-60"><%= arg[:name].presence || "arg" %> (<%= arg[:type] %>):</span>
-                <%= arg[:value].is_a?(Array) || arg[:value].is_a?(Hash) ? arg[:value].to_json : arg[:value] %>
+                <% if arg[:type] == "address" && arg[:value].is_a?(String) %>
+                  <%= render ScaffoldEth::AddressComponent.new(address: arg[:value], size: "xs", resolve_ens: false) %>
+                <% else %>
+                  <%= arg[:value].is_a?(Array) || arg[:value].is_a?(Hash) ? arg[:value].to_json : arg[:value] %>
+                <% end %>
               </div>
             <% end %>
           </div>
@@ -54,10 +68,12 @@
 
   <% if @transaction[:logs].any? %>
     <h2 class="text-lg font-bold mt-6 mb-2">Logs (<%= @transaction[:logs].size %>)</h2>
-    <div class="bg-base-100 rounded-2xl shadow p-4 space-y-3">
+    <div class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary p-4 space-y-3">
       <% @transaction[:logs].each do |log| %>
         <div class="text-xs font-mono break-all border-b border-base-200 pb-2">
-          <div><span class="opacity-60">address:</span> <%= log["address"] %></div>
+          <div class="flex items-center gap-1"><span class="opacity-60">address:</span>
+            <%= render ScaffoldEth::AddressComponent.new(address: log["address"], size: "xs", resolve_ens: false) %>
+          </div>
           <div><span class="opacity-60">topics:</span> <%= Array(log["topics"]).join(", ") %></div>
           <div><span class="opacity-60">data:</span> <%= log["data"] %></div>
         </div>
