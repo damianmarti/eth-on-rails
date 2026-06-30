@@ -63,10 +63,10 @@
   <% if @pages > 1 %>
     <div class="flex items-center justify-center gap-3 mt-4">
       <%= link_to "« Prev", block_explorer_path(page: @page - 1),
-            class: "btn btn-sm rounded-full #{'btn-disabled' if @page <= 1}" %>
+            class: "btn btn-sm btn-primary #{'btn-disabled' if @page <= 1}" %>
       <span class="text-sm opacity-70">Page <%= @page %> / <%= @pages %></span>
       <%= link_to "Next »", block_explorer_path(page: @page + 1),
-            class: "btn btn-sm rounded-full #{'btn-disabled' if @page >= @pages}" %>
+            class: "btn btn-sm btn-primary #{'btn-disabled' if @page >= @pages}" %>
     </div>
   <% end %>
 </div>

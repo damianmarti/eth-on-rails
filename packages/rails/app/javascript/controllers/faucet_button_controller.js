@@ -6,7 +6,7 @@ import { notify, nextToastId } from "../lib/toast";
 // Mirrors SE-2's FaucetButton.
 export default class extends Controller {
   static values = { amount: Number, url: String };
-  static targets = ["label"];
+  static targets = ["icon", "spinner"];
 
   async drip() {
     const address = connectedAddress();
@@ -17,6 +17,7 @@ export default class extends Controller {
 
     const id = nextToastId();
     notify("loading", `Requesting ${this.amountValue || 1} ETH from faucet…`, { id });
+    this.setBusy(true);
 
     try {
       const res = await fetch(this.urlValue || "/api/faucet", {
@@ -34,7 +35,15 @@ export default class extends Controller {
       document.dispatchEvent(new CustomEvent("scaffold:balance-refresh"));
     } catch (err) {
       notify("error", err.message, { id });
+    } finally {
+      this.setBusy(false);
     }
+  }
+
+  setBusy(busy) {
+    this.element.disabled = busy;
+    if (this.hasIconTarget) this.iconTarget.classList.toggle("hidden", busy);
+    if (this.hasSpinnerTarget) this.spinnerTarget.classList.toggle("hidden", !busy);
   }
 
   csrfToken() {

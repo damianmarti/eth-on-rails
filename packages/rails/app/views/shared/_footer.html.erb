@@ -10,10 +10,10 @@
         </span>
 
         <% if active_chain.local? %>
-          <%= link_to faucet_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
+          <%= link_to faucet_path, class: "btn btn-sm btn-primary gap-1" do %>
             💰 <span>Faucet</span>
           <% end %>
-          <%= link_to block_explorer_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
+          <%= link_to block_explorer_path, class: "btn btn-sm btn-primary gap-1" do %>
             🔍 <span>Block Explorer</span>
           <% end %>
         <% end %>

@@ -58,7 +58,7 @@
           <% end %>
 
           <div class="flex items-center gap-3 mt-1">
-            <button type="button" class="btn btn-xs btn-secondary rounded-full"
+            <button type="button" class="btn btn-xs btn-secondary"
                     data-action="debug-read#read">Read 📡</button>
             <span class="font-mono text-sm break-all" data-debug-read-target="output"></span>
           </div>
@@ -96,7 +96,7 @@
             <%= render ScaffoldEth::EtherInputComponent.new(name: "#{fn['name']}__value") %>
           <% end %>
 
-          <button type="button" class="btn btn-sm btn-primary rounded-full mt-2"
+          <button type="button" class="btn btn-sm btn-primary mt-2"
                   data-scaffold-write-contract-target="button"
                   data-action="scaffold-write-contract#submit">
             Send 💸

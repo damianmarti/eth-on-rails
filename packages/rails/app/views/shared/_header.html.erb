@@ -1,5 +1,5 @@
 <header class="sticky lg:static top-0 z-20 navbar bg-base-100 border-b-2 border-base-300 min-h-16 shrink-0 justify-between px-2 sm:px-4">
-  <div class="navbar-start gap-2">
+  <div class="navbar-start gap-2 self-stretch w-auto">
     <%= link_to root_path, class: "flex items-center gap-2 ml-2 mr-6 shrink-0" do %>
       <div class="flex items-center justify-center w-10 h-10 bg-base-300 text-2xl shrink-0">🏗️</div>
       <div class="flex flex-col leading-tight">
@@ -8,9 +8,9 @@
       </div>
     <% end %>
 
-    <nav class="hidden lg:flex items-center gap-1">
+    <nav class="hidden lg:flex items-stretch self-stretch">
       <%= nav_link "Home", root_path %>
-      <%= nav_link "Debug Contracts", debug_path %>
+      <%= nav_link "Debug Contracts", debug_path, icon: bug_ant_icon %>
     </nav>
   </div>
 
@@ -18,7 +18,7 @@
     <%# Reown AppKit connect button + network badge (Stimulus-driven) %>
     <%= render ScaffoldEth::ConnectButtonComponent.new %>
     <% if active_chain.local? %>
-      <button class="btn btn-sm btn-ghost rounded-full hidden sm:inline-flex"
+      <button class="btn btn-sm btn-ghost hidden sm:inline-flex"
               data-controller="burner" data-action="click->burner#toggle"
               title="Connect a throwaway local account">
         🔥 <span data-burner-target="label">Burner</span>
@@ -30,7 +30,7 @@
 </header>
 
 <%# mobile nav %>
-<nav class="lg:hidden flex items-center justify-center gap-1 bg-base-100 border-b border-base-300 py-1">
+<nav class="lg:hidden flex items-stretch justify-center bg-base-100 border-b border-base-300 h-10">
   <%= nav_link "Home", root_path %>
-  <%= nav_link "Debug Contracts", debug_path %>
+  <%= nav_link "Debug Contracts", debug_path, icon: bug_ant_icon %>
 </nav>

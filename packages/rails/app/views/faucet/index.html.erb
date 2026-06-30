@@ -28,7 +28,7 @@
     <%= render ScaffoldEth::BaseInputComponent.new(name: "faucet_amount", value: "1", placeholder: "1.0", arg: false,
           data: { "faucet-form-target": "amount" }) %>
 
-    <button type="button" class="btn btn-primary rounded-full w-full mt-5"
+    <button type="button" class="btn btn-primary w-full mt-5"
             data-faucet-form-target="button" data-action="faucet-form#send">
       Send ETH 💧
     </button>
