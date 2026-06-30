@@ -4,6 +4,7 @@ import { formatEther } from "viem";
 import { wagmiConfig } from "../lib/wagmi";
 import { onAccountChange } from "../lib/account";
 import { pollingInterval } from "../lib/config";
+import { fetchPrice } from "../lib/price";
 
 // Live native-token balance for an address (polls + refreshes on faucet/account
 // change). Toggles ETH/USD. Mirrors SE-2's <Balance /> / useWatchBalance.
@@ -14,6 +15,11 @@ export default class extends Controller {
   connect() {
     this.showUsd = false;
     this.wei = 0n;
+    this.price = null;
+    fetchPrice().then((p) => {
+      this.price = p;
+      this.render();
+    });
 
     // If no explicit address, follow the connected account.
     if (!this.addressValue) {

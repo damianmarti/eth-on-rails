@@ -1,24 +1,41 @@
-<footer class="shrink-0 bg-base-100 border-t border-base-300 py-4 px-4">
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-3 max-w-6xl mx-auto">
-    <div class="flex items-center gap-2 text-sm">
-      <% if active_chain.local? %>
-        <%= link_to faucet_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
-          💰 <span>Faucet</span>
-        <% end %>
-        <%= link_to block_explorer_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
-          🔍 <span>Block Explorer</span>
-        <% end %>
-      <% end %>
-    </div>
+<footer class="shrink-0 bg-base-100 border-t border-base-300 py-3 px-4">
+  <div class="flex flex-col gap-2 max-w-6xl mx-auto">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-sm">
+        <%# Live native-currency price (eth.rb -> CoinGecko) %>
+        <span class="btn btn-primary btn-sm font-normal gap-1 cursor-auto hidden"
+              data-controller="price">
+          <span class="text-green-600">$</span>
+          <span data-price-target="value">—</span>
+        </span>
 
-    <div class="flex items-center gap-3 text-sm">
-      <span class="opacity-70">Built with eth.rb + viem on Rails</span>
+        <% if active_chain.local? %>
+          <%= link_to faucet_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
+            💰 <span>Faucet</span>
+          <% end %>
+          <%= link_to block_explorer_path, class: "btn btn-sm btn-primary rounded-full gap-1" do %>
+            🔍 <span>Block Explorer</span>
+          <% end %>
+        <% end %>
+      </div>
+
       <%# Theme toggle (light/dark) %>
       <label class="swap swap-rotate" data-action="change->theme#toggle">
         <input type="checkbox" data-theme-target="toggle" />
         <span class="swap-on">🌞</span>
         <span class="swap-off">🌙</span>
       </label>
+    </div>
+
+    <%# Credits row (SE-2 parity) %>
+    <div class="flex justify-center items-center gap-2 text-sm opacity-80">
+      <a href="https://github.com/scaffold-eth/scaffold-eth-2" target="_blank" rel="noreferrer" class="link">
+        Scaffold-ETH 2
+      </a>
+      <span>·</span>
+      <span>Built with ❤️ on <strong>Rails</strong> + <strong>eth.rb</strong></span>
+      <span>·</span>
+      <a href="https://github.com/q9f/eth.rb" target="_blank" rel="noreferrer" class="link">eth.rb</a>
     </div>
   </div>
 </footer>

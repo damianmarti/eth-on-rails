@@ -1,7 +1,7 @@
 <div class="grid lg:grid-cols-3 gap-6">
-  <%# ---- Contract overview (left) ---- %>
-  <div class="lg:col-span-1">
-    <div class="bg-base-100 rounded-2xl shadow p-4 sticky top-20">
+  <%# ---- Left column: contract info + auto-refreshing variables ---- %>
+  <div class="lg:col-span-1 space-y-6">
+    <div class="bg-base-100 rounded-2xl shadow p-4">
       <h2 class="font-bold text-lg mb-2"><%= contract.name %></h2>
       <div class="text-sm mb-2">
         <%= render ScaffoldEth::AddressComponent.new(address: contract.address, size: "sm", resolve_ens: false) %>
@@ -10,21 +10,36 @@
         <span class="opacity-60">Balance:</span>
         <%= render ScaffoldEth::BalanceComponent.new(address: contract.address) %>
       </div>
-      <div class="text-xs opacity-50 mt-2">Chain id <%= contract.chain_id %></div>
+      <div class="text-sm mt-1">
+        <span class="opacity-60">Network:</span>
+        <span style="color: <%= helpers.active_chain.color %>"><%= helpers.active_chain.name %></span>
+      </div>
     </div>
+
+    <%# Contract Variables — zero-input view functions, auto-refreshing (eth.rb) %>
+    <% if variable_functions.any? %>
+      <div class="bg-base-100 rounded-2xl shadow p-4">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="badge badge-sm badge-ghost">eth.rb · server</span>
+        </div>
+        <% variable_functions.each do |fn| %>
+          <%= render ScaffoldEth::DisplayVariableComponent.new(contract: contract, function: fn) %>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
-  <%# ---- Read / Write (right) ---- %>
+  <%# ---- Right column: Read (inputs) + Write ---- %>
   <div class="lg:col-span-2 space-y-6">
-    <%# ---------- READ (server-side via eth.rb) ---------- %>
-    <section class="bg-base-100 rounded-2xl shadow p-4">
-      <div class="flex items-center gap-2 mb-3">
-        <h3 class="font-bold">Read</h3>
+    <%# ---------- READ (input-taking, server-side via eth.rb) ---------- %>
+    <section class="bg-base-100 rounded-2xl shadow p-4 relative">
+      <span class="absolute -top-3 left-4 badge badge-primary badge-sm">Read</span>
+      <div class="flex items-center gap-2 mb-3 mt-1">
         <span class="badge badge-sm badge-ghost">eth.rb · server</span>
       </div>
 
       <% if read_functions.empty? %>
-        <p class="text-sm opacity-60">No read functions.</p>
+        <p class="text-sm opacity-60">No read functions with inputs.</p>
       <% end %>
 
       <% read_functions.each do |fn| %>
@@ -41,16 +56,16 @@
           <div class="flex items-center gap-3 mt-1">
             <button type="button" class="btn btn-xs btn-secondary rounded-full"
                     data-action="debug-read#read">Read 📡</button>
-            <span class="font-mono text-sm break-all" data-debug-read-target="output"><%= eager_value(fn) %></span>
+            <span class="font-mono text-sm break-all" data-debug-read-target="output"></span>
           </div>
         </div>
       <% end %>
     </section>
 
     <%# ---------- WRITE (browser-signed via viem) ---------- %>
-    <section class="bg-base-100 rounded-2xl shadow p-4">
-      <div class="flex items-center gap-2 mb-3">
-        <h3 class="font-bold">Write</h3>
+    <section class="bg-base-100 rounded-2xl shadow p-4 relative">
+      <span class="absolute -top-3 left-4 badge badge-primary badge-sm">Write</span>
+      <div class="flex items-center gap-2 mb-3 mt-1">
         <span class="badge badge-sm badge-ghost">viem · wallet</span>
       </div>
 

@@ -25,6 +25,8 @@ import DebugReadController from "./debug_read_controller";
 import BlockStreamController from "./block_stream_controller";
 import FaucetFormController from "./faucet_form_controller";
 import BurnerController from "./burner_controller";
+import PriceController from "./price_controller";
+import DisplayVariableController from "./display_variable_controller";
 
 application.register("theme", ThemeController);
 application.register("connect-button", ConnectButtonController);
@@ -47,3 +49,5 @@ application.register("debug-read", DebugReadController);
 application.register("block-stream", BlockStreamController);
 application.register("faucet-form", FaucetFormController);
 application.register("burner", BurnerController);
+application.register("price", PriceController);
+application.register("display-variable", DisplayVariableController);

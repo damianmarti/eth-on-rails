@@ -68,9 +68,55 @@ module ScaffoldEth
         all(chain_id).keys
       end
 
+      # Map of 4-byte function selector -> { contract:, name:, inputs: } across all
+      # known contracts on a chain. Used by the block explorer to decode the
+      # "Function Called" column (the eth.rb showcase for tx-data decoding).
+      def function_selectors(chain_id = ScaffoldEth::Config.active_chain_id)
+        sig = current_signature
+        if @selectors_signature != sig
+          @selectors = {}
+          @selectors_signature = sig
+        end
+        @selectors ||= {}
+        @selectors[chain_id.to_i] ||= build_selectors(chain_id.to_i)
+      end
+
+      private
+
+      def build_selectors(chain_id)
+        map = {}
+        all(chain_id).each do |contract_name, info|
+          info.functions.each do |fn|
+            sig = function_signature(fn)
+            selector = Eth::Util.bin_to_prefixed_hex(Eth::Util.keccak256(sig)[0, 4])
+            map[selector] = { contract: contract_name, name: fn["name"], inputs: fn["inputs"] }
+          end
+        end
+        map
+      end
+
+      def function_signature(fn)
+        "#{fn['name']}(#{fn['inputs'].map { |i| canonical_type(i) }.join(',')})"
+      end
+
+      # Canonical ABI type (handles tuples/arrays) for selector hashing.
+      def canonical_type(input)
+        type = input["type"].to_s
+        if type.start_with?("tuple")
+          inner = (input["components"] || []).map { |c| canonical_type(c) }.join(",")
+          suffix = type.sub("tuple", "")
+          "(#{inner})#{suffix}"
+        else
+          type
+        end
+      end
+
+      public
+
       def reload!
         @cache = nil
         @signature = nil
+        @selectors = nil
       end
 
       private

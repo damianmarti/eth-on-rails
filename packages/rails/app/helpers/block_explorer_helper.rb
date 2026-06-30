@@ -29,6 +29,17 @@ module BlockExplorerHelper
     nil
   end
 
+  # Renders the "Function Called" cell: decoded name + selector badge, or just the
+  # selector badge, or nothing for a plain transfer.
+  def function_called_badge(function)
+    return "".html_safe if function.nil?
+
+    parts = []
+    parts << tag.span(function[:name], class: "mr-1 font-medium") if function[:name].present?
+    parts << tag.span(function[:selector], class: "badge badge-ghost badge-xs font-mono") if function[:selector]
+    safe_join(parts)
+  end
+
   def tx_status_badge(status)
     if status == 1
       tag.span("Success", class: "badge badge-success badge-sm")

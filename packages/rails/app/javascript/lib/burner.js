@@ -8,6 +8,23 @@ import { createWalletClient as mkWalletClient, http as httpTransport, numberToHe
 import { activeChainId, targetNetworks, onlyLocalBurnerWallet } from "./config";
 
 const STORAGE_KEY = "scaffoldEth.burnerWallet.pk";
+const SESSION_KEY = "scaffoldEth.burnerWallet.connected";
+
+// Whether the burner was the active connector last session (for reconnect on load).
+export function burnerSessionActive() {
+  try {
+    return localStorage.getItem(SESSION_KEY) === "true";
+  } catch (_) {
+    return false;
+  }
+}
+
+function setBurnerSession(active) {
+  try {
+    if (active) localStorage.setItem(SESSION_KEY, "true");
+    else localStorage.removeItem(SESSION_KEY);
+  } catch (_) {}
+}
 
 export function burnerPrivateKey() {
   let pk = localStorage.getItem(STORAGE_KEY);
@@ -102,6 +119,7 @@ export function burnerConnector() {
 
       async connect() {
         connected = true;
+        setBurnerSession(true);
         const net = localNetwork();
         const provider = burnerProvider(net);
         const accounts = await provider.request({ method: "eth_accounts" });
@@ -109,6 +127,7 @@ export function burnerConnector() {
       },
       async disconnect() {
         connected = false;
+        setBurnerSession(false);
       },
       async getAccounts() {
         return [burnerAccount().address];
@@ -126,6 +145,7 @@ export function burnerConnector() {
       onChainChanged() {},
       onDisconnect() {
         connected = false;
+        setBurnerSession(false);
         config.emitter.emit("disconnect");
       },
     };

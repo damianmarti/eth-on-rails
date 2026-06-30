@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus";
 import { connect, disconnect, getAccount } from "@wagmi/core";
 import { wagmiConfig } from "../lib/wagmi";
 import { burnerConnector, burnerAccount, burnerAvailable, resetBurner, BURNER_ID } from "../lib/burner";
+import { onAccountChange } from "../lib/account";
 import { notify } from "../lib/toast";
 
 // "Burner Wallet" connect button, shown only on local networks. Connects the
@@ -14,7 +15,12 @@ export default class extends Controller {
       this.element.classList.add("hidden");
       return;
     }
-    this.update(getAccount(wagmiConfig));
+    // Reflect connection changes (incl. auto-reconnect on page load).
+    this.unsub = onAccountChange((acct) => this.update(acct));
+  }
+
+  disconnect() {
+    this.unsub && this.unsub();
   }
 
   async toggle() {
@@ -25,7 +31,9 @@ export default class extends Controller {
       return;
     }
     try {
-      await connect(wagmiConfig, { connector: burnerConnector() });
+      // Prefer the connector already registered in the config (so reconnect works).
+      const registered = wagmiConfig.connectors.find((c) => c.id === BURNER_ID);
+      await connect(wagmiConfig, { connector: registered || burnerConnector() });
       notify("success", "Burner wallet connected");
       this.update(getAccount(wagmiConfig));
     } catch (err) {

@@ -1,7 +1,0 @@
-<tr>
-  <td><%= link_to "##{b[:number]}", block_explorer_block_path(b[:number]), class: "link link-primary font-mono" %></td>
-  <td class="text-xs opacity-70"><%= block_time_ago(b[:timestamp]) %></td>
-  <td><%= b[:tx_count] %></td>
-  <td class="font-mono text-xs"><%= number_with_delimiter(b[:gas_used]) %></td>
-  <td class="font-mono text-xs"><%= link_to short_address(b[:miner]), block_explorer_address_path(b[:miner]), class: "link" %></td>
-</tr>

@@ -21,6 +21,50 @@ module ScaffoldEth
       (first..tip).map { |n| block(n) }.compact.reverse
     end
 
+    # Max blocks scanned when building the transaction list (local-dev friendly).
+    SCAN_DEPTH = 500
+
+    # Flattened, newest-first transactions across recent blocks, with the called
+    # function decoded. Returns { transactions:, total:, page:, per_page:, pages: }.
+    def latest_transactions(page: 1, per_page: 20)
+      txs = collect_transactions
+      total = txs.size
+      pages = [(total.to_f / per_page).ceil, 1].max
+      page = page.clamp(1, pages)
+      slice = txs[((page - 1) * per_page), per_page] || []
+      { transactions: slice, total: total, page: page, per_page: per_page, pages: pages }
+    end
+
+    # Transactions touching `address` (from or to), newest-first.
+    def transactions_for(address)
+      a = address.to_s.downcase
+      collect_transactions.select { |t| t[:from]&.downcase == a || t[:to]&.downcase == a }
+    end
+
+    # Decode the "Function Called" for a tx: nil for plain transfers; otherwise the
+    # 4-byte selector matched against the contract registry (with decoded args when
+    # known, else just the selector badge).
+    def decode_function(input)
+      return nil if input.blank? || input == "0x"
+
+      selector = input[0, 10]
+      meta = ScaffoldEth::ContractRegistry.function_selectors(@chain_id)[selector]
+      return { name: nil, selector: selector, args: nil } unless meta
+
+      args =
+        begin
+          types = meta[:inputs].map { |i| i["type"] }
+          decoded = types.empty? ? [] : Eth::Abi.decode(types, input[10..])
+          meta[:inputs].each_with_index.map do |inp, i|
+            { name: inp["name"], type: inp["type"],
+              value: ScaffoldEth::Reader.serialize_typed(decoded[i], inp["type"]) }
+          end
+        rescue StandardError
+          nil
+        end
+      { name: meta[:name], selector: selector, args: args }
+    end
+
     # A block by number (Integer) or hash (0x…). full: include tx objects.
     def block(id, full: false)
       raw =
@@ -42,6 +86,23 @@ module ScaffoldEth
 
     def receipt(hash)
       @client.rpc("eth_getTransactionReceipt", hash)
+    end
+
+    def code(address)
+      @client.code(address)
+    end
+
+    # Logs emitted by an address (best-effort; recent range only).
+    def logs_for(address, lookback: SCAN_DEPTH)
+      tip = latest_block_number
+      from = [tip - lookback + 1, 0].max
+      @client.rpc("eth_getLogs", {
+        address: address,
+        from_block: hex(from),
+        to_block: "latest"
+      }) || []
+    rescue StandardError
+      []
     end
 
     # Summary for an address: balance, nonce, contract?/code size.
@@ -68,6 +129,34 @@ module ScaffoldEth
     end
 
     private
+
+    # Walk recent blocks (newest first) and flatten their transactions, decoding
+    # the called function for each. Contract creation = tx.to is null.
+    def collect_transactions
+      tip = latest_block_number
+      first = [tip - SCAN_DEPTH + 1, 0].max
+      out = []
+      tip.downto(first) do |n|
+        raw = @client.rpc("eth_getBlockByNumber", hex(n), true)
+        next unless raw
+
+        timestamp = to_i(raw["timestamp"])
+        (raw["transactions"] || []).reverse_each do |tx|
+          out << {
+            hash: tx["hash"],
+            block_number: to_i(tx["blockNumber"]),
+            timestamp: timestamp,
+            from: tx["from"],
+            to: tx["to"],
+            value: to_i(tx["value"]),
+            input: tx["input"],
+            contract_creation: tx["to"].nil?,
+            function: decode_function(tx["input"])
+          }
+        end
+      end
+      out
+    end
 
     def hex(n)
       return n if n.is_a?(String) && n.start_with?("0x")
@@ -109,6 +198,8 @@ module ScaffoldEth
         status: receipt && to_i(receipt["status"]),
         gas_used: receipt && to_i(receipt["gasUsed"]),
         contract_address: receipt && receipt["contractAddress"],
+        contract_creation: raw["to"].nil?,
+        function: decode_function(raw["input"]),
         logs: receipt ? (receipt["logs"] || []) : []
       }
     end

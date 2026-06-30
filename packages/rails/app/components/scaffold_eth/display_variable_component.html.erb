@@ -1,0 +1,17 @@
+<div class="py-2 first:pt-0"
+     data-controller="display-variable"
+     data-display-variable-contract-value="<%= contract_name %>"
+     data-display-variable-function-value="<%= name %>">
+  <div class="flex items-center gap-2">
+    <span class="font-medium text-sm"><%= name %></span>
+    <button type="button" class="opacity-40 hover:opacity-100" title="Refresh"
+            data-action="display-variable#refresh" data-display-variable-target="refresh">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    </button>
+  </div>
+  <div class="font-mono text-sm break-all whitespace-pre-wrap" data-display-variable-target="output"><%= initial_value %></div>
+</div>

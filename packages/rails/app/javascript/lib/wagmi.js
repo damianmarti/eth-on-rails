@@ -11,8 +11,9 @@ import { createAppKit } from "@reown/appkit";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import * as networks from "@reown/appkit/networks";
 import { http } from "@wagmi/core";
-import { reconnect } from "@wagmi/core";
+import { reconnect, connect, getAccount } from "@wagmi/core";
 import { targetNetworks, walletConnectProjectId, activeChainId } from "./config";
+import { burnerConnector, burnerSessionActive, burnerAvailable, BURNER_ID } from "./burner";
 
 // Map our config network keys to Reown AppKit predefined networks where possible.
 const PREDEFINED = {
@@ -60,10 +61,15 @@ for (const net of targets) {
 
 const projectId = walletConnectProjectId();
 
+// Register the burner connector up-front (local networks only) so wagmi's native
+// reconnect() restores it across full page reloads, like SE-2.
+const extraConnectors = burnerAvailable() ? [burnerConnector()] : [];
+
 export const wagmiAdapter = new WagmiAdapter({
   networks: appKitNetworks,
   projectId,
   transports,
+  connectors: extraConnectors,
   ssr: false,
 });
 
@@ -99,9 +105,18 @@ try {
   console.error("[scaffold-eth] AppKit init failed:", err);
 }
 
-// Restore any previous wallet session (incl. the burner connector) on load.
+// Restore any previous wallet session on load. The burner connector is now
+// registered in the config, so wagmi's native reconnect() restores it (SE-2
+// parity). Keep an explicit fallback connect in case reconnect misses it.
 try {
-  reconnect(wagmiConfig).catch(() => {});
+  reconnect(wagmiConfig)
+    .catch(() => {})
+    .finally(() => {
+      if (burnerSessionActive() && burnerAvailable() && !getAccount(wagmiConfig).address) {
+        const registered = wagmiConfig.connectors.find((c) => c.id === BURNER_ID);
+        connect(wagmiConfig, { connector: registered || burnerConnector() }).catch(() => {});
+      }
+    });
 } catch (_) {}
 
 export function targetChainObjects() {

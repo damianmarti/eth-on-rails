@@ -22,6 +22,7 @@ Rails.application.routes.draw do
   # --- JSON API consumed by the Stimulus/JS layer (eth.rb-backed) ---
   namespace :api do
     get "config", to: "config#show"
+    get "price", to: "price#show"
     get "contracts", to: "contracts#index"
     get "contracts/:name", to: "contracts#show", as: :contract
     get "read", to: "reads#show"

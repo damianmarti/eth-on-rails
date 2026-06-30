@@ -12,8 +12,14 @@ module ScaffoldEth
 
     attr_reader :contract
 
+    # Zero-input view functions shown in the left "Contract Variables" card (SE-2).
+    def variable_functions
+      contract.read_functions.select { |f| f["inputs"].empty? }.sort_by { |f| f["name"] }
+    end
+
+    # Read functions that take inputs — shown in the right "Read" card.
     def read_functions
-      contract.read_functions.sort_by { |f| f["name"] }
+      contract.read_functions.reject { |f| f["inputs"].empty? }.sort_by { |f| f["name"] }
     end
 
     def write_functions
@@ -26,15 +32,6 @@ module ScaffoldEth
 
     def payable?(fn)
       fn["stateMutability"] == "payable"
-    end
-
-    # Read functions with zero inputs can be eagerly rendered server-side.
-    def eager_value(fn)
-      return nil unless fn["inputs"].empty?
-
-      ScaffoldEth::Reader.new(contract.chain_id).read_json(contract.name, fn["name"])
-    rescue StandardError => e
-      "⚠️ #{e.message}"
     end
   end
 end

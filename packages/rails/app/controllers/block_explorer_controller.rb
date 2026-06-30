@@ -4,7 +4,13 @@ class BlockExplorerController < ApplicationController
 
   def index
     @latest_number = @explorer.latest_block_number
-    @blocks = @explorer.latest_blocks(count: 20)
+    @page = params[:page].to_i
+    @page = 1 if @page < 1
+    result = @explorer.latest_transactions(page: @page, per_page: 20)
+    @transactions = result[:transactions]
+    @page = result[:page]
+    @pages = result[:pages]
+    @total = result[:total]
   end
 
   def block
@@ -21,6 +27,9 @@ class BlockExplorerController < ApplicationController
 
   def address
     @info = @explorer.address_info(params[:address])
+    @transactions = @explorer.transactions_for(params[:address])
+    @code = @info[:is_contract] ? @explorer.code(params[:address]) : nil
+    @tab = params[:tab].presence || "transactions"
   end
 
   def search

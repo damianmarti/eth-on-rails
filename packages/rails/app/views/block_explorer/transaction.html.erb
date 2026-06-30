@@ -23,6 +23,29 @@
       </div>
     <% end %>
 
+    <% if @transaction[:function] && @transaction[:function][:name] %>
+      <div class="flex flex-col sm:flex-row sm:gap-3">
+        <span class="opacity-60 w-32 shrink-0">Function</span>
+        <span class="font-mono">
+          <%= @transaction[:function][:name] %>
+          <span class="badge badge-ghost badge-xs"><%= @transaction[:function][:selector] %></span>
+        </span>
+      </div>
+      <% if @transaction[:function][:args].present? %>
+        <div class="flex flex-col sm:flex-row sm:gap-3">
+          <span class="opacity-60 w-32 shrink-0">Arguments</span>
+          <div class="flex-1 space-y-1">
+            <% @transaction[:function][:args].each do |arg| %>
+              <div class="font-mono text-xs break-all">
+                <span class="opacity-60"><%= arg[:name].presence || "arg" %> (<%= arg[:type] %>):</span>
+                <%= arg[:value].is_a?(Array) || arg[:value].is_a?(Hash) ? arg[:value].to_json : arg[:value] %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
     <div class="flex flex-col sm:flex-row sm:gap-3">
       <span class="opacity-60 w-32 shrink-0">Input data</span>
       <span class="font-mono break-all text-xs bg-base-200 rounded p-2 flex-1"><%= @transaction[:input] %></span>
