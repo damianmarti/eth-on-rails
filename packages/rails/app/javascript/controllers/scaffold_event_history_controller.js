@@ -42,6 +42,7 @@ export default class extends Controller {
       .reverse()
       .forEach((ev) => {
         const row = document.createElement("tr");
+        row.dataset.eventKey = `${ev.transactionHash || ""}-${ev.logIndex ?? ""}`;
         row.innerHTML = `
           <td class="font-mono text-xs align-top">${ev.blockNumber ?? "-"}</td>
           <td class="text-xs align-top">${formatArgs(ev.args)}</td>

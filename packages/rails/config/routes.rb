@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   # --- ETH-on-Rails pages (Scaffold-ETH 2 parity) ---
   root "home#index"
 
+  # Greetings example — read/write/event-log walkthrough
+  get "example", to: "example#index", as: :example
+
   # Debug Contracts — auto-generated UI from each contract's ABI
   get "debug", to: "debug#index", as: :debug
   get "debug/:contract", to: "debug#show", as: :debug_contract

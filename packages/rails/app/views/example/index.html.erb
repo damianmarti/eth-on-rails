@@ -1,0 +1,99 @@
+<% content_for :title, "Example · Greetings" %>
+
+<div class="max-w-3xl mx-auto w-full px-4 py-8">
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold">👋 Greetings Example</h1>
+    <p class="text-sm opacity-70 mt-1">
+      A worked example: <strong>read</strong> the current greeting, <strong>write</strong> a new one
+      (signed in your browser), and watch the <strong>change log</strong> update live.
+    </p>
+  </div>
+
+  <% unless @contract %>
+    <div class="alert alert-info">
+      <span>
+        <code class="px-1 bg-base-300">YourContract</code> isn't deployed yet. Run
+        <code class="px-1 bg-base-300">yarn deploy</code> (Hardhat) or
+        <code class="px-1 bg-base-300">yarn foundry:deploy</code> from the repo root.
+      </span>
+    </div>
+  <% else %>
+    <%# ---------- 1. Read the current greeting (live, via viem) ---------- %>
+    <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5 mb-6"
+             data-controller="scaffold-read-contract"
+             data-scaffold-read-contract-contract-value="YourContract"
+             data-scaffold-read-contract-function-value="greeting"
+             data-scaffold-read-contract-watch-value="true">
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="font-bold">Current greeting</h2>
+        <span class="badge badge-sm badge-ghost">viem · read</span>
+      </div>
+      <p class="text-2xl font-bold text-primary break-words"
+         data-scaffold-read-contract-target="output">…</p>
+      <p class="text-xs opacity-50 mt-2">
+        Read with the <code>scaffold-read-contract</code> controller — refreshes on each new transaction.
+      </p>
+    </section>
+
+    <%# ---------- 2. Set a new greeting (browser-signed write) ---------- %>
+    <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5 mb-6"
+             data-controller="scaffold-write-contract"
+             data-scaffold-write-contract-contract-value="YourContract"
+             data-scaffold-write-contract-function-value="setGreeting">
+      <div class="flex items-center gap-2 mb-3">
+        <h2 class="font-bold">Set a new greeting</h2>
+        <span class="badge badge-sm badge-ghost">viem · wallet</span>
+      </div>
+
+      <label class="block text-xs font-medium opacity-70 mb-1 ml-1">New greeting</label>
+      <%= render ScaffoldEth::BaseInputComponent.new(
+            name: "newGreeting", sol_type: "string", placeholder: "Type a new greeting…") %>
+
+      <label class="block text-xs font-medium opacity-70 mb-1 ml-1 mt-3">
+        Optional — send some ETH to make it <em>premium</em>
+      </label>
+      <%= render ScaffoldEth::EtherInputComponent.new(name: "premiumValue") %>
+
+      <button type="button" class="btn btn-sm btn-primary mt-3"
+              data-scaffold-write-contract-target="button"
+              data-action="scaffold-write-contract#submit">
+        Set Greeting 💸
+      </button>
+      <p class="text-xs opacity-50 mt-2">
+        Submitted with the <code>scaffold-write-contract</code> controller — signed by your wallet via viem.
+        Connect the 🔥 burner wallet and grab funds from the faucet first.
+      </p>
+    </section>
+
+    <%# ---------- 3. Greetings change log (event history + live) ---------- %>
+    <section class="bg-base-100 border border-base-300 rounded-3xl shadow-md shadow-secondary px-6 py-5"
+             data-controller="scaffold-event-history scaffold-watch-event"
+             data-scaffold-event-history-contract-value="YourContract"
+             data-scaffold-event-history-event-value="GreetingChange"
+             data-scaffold-watch-event-contract-value="YourContract"
+             data-scaffold-watch-event-event-value="GreetingChange">
+      <div class="flex items-center gap-2 mb-3">
+        <h2 class="font-bold">Greetings change log</h2>
+        <span class="badge badge-sm badge-ghost">eth.rb · events</span>
+      </div>
+
+      <p class="hidden text-sm opacity-60" data-scaffold-event-history-target="empty">
+        No greetings set yet — be the first!
+      </p>
+
+      <div class="overflow-x-auto">
+        <table class="table table-sm">
+          <thead>
+            <tr class="text-xs"><th>Block</th><th>Change</th><th>Tx</th></tr>
+          </thead>
+          <tbody data-scaffold-event-history-target="list"
+                 data-scaffold-watch-event-target="list"></tbody>
+        </table>
+      </div>
+      <p class="text-xs opacity-50 mt-2">
+        History fetched from <code>/api/events</code> (eth.rb <code>getLogs</code>) and updated live via
+        <code>scaffold-watch-event</code> (viem). Addresses render with the Address component.
+      </p>
+    </section>
+  <% end %>
+</div>
