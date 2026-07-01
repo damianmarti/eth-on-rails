@@ -25,5 +25,27 @@ module Api
       get "/api/events", params: { contract: "YourContract", event: "GreetingChange", from_block: 100, to_block: 50 }
       assert_response :bad_request
     end
+
+    test "caps an unbounded from_block=0 with omitted to_block (resolves latest)" do
+      # Common UI path: from_block=0, no to_block. "latest" must resolve to the
+      # current block so the range cap applies instead of scanning 0..head.
+      fake_client = Struct.new(:block_number).new(Api::EventsController::MAX_BLOCK_RANGE + 5_000)
+      with_stubbed_client(fake_client) do
+        get "/api/events", params: { contract: "YourContract", event: "GreetingChange", from_block: 0 }
+        assert_response :bad_request
+      end
+    end
+
+    private
+
+    # Temporarily replace ScaffoldEth::Client.for with a stub that returns
+    # fake_client, restoring the original afterward.
+    def with_stubbed_client(fake_client)
+      original = ScaffoldEth::Client.method(:for)
+      ScaffoldEth::Client.define_singleton_method(:for) { |*| fake_client }
+      yield
+    ensure
+      ScaffoldEth::Client.define_singleton_method(:for, original)
+    end
   end
 end
