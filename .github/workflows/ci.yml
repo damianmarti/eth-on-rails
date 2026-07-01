@@ -72,10 +72,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
 
+      # No root yarn.lock is committed, so install fresh (not --frozen-lockfile)
+      # and skip setup-node's yarn cache (which requires a lockfile as its key).
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Run Hardhat tests
         run: yarn hardhat:test
@@ -90,10 +91,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
 
+      # No root yarn.lock is committed, so install fresh (not --frozen-lockfile)
+      # and skip setup-node's yarn cache (which requires a lockfile as its key).
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
