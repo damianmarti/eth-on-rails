@@ -27,7 +27,45 @@ module ScaffoldEth
     end
 
     test "serialize_typed handles array types element-wise" do
-      assert_equal %w[1 2 3], Reader.serialize_typed([1, 2, 3], "uint256[]")
+      assert_equal %w[1 2 3], Reader.serialize_typed([ 1, 2, 3 ], "uint256[]")
+    end
+  end
+
+  class ReaderReadableGuardTest < ActiveSupport::TestCase
+    # Build a Reader without going through #initialize (no client/network needed
+    # to exercise the view/pure guard).
+    def reader = Reader.allocate
+
+    def info_for(abi)
+      ScaffoldEth::ContractRegistry::ContractInfo.new(
+        name: "YourContract", address: "0x0000000000000000000000000000000000000001",
+        abi: abi, chain_id: 31337
+      )
+    end
+
+    test "allows view functions" do
+      info = info_for([ { "type" => "function", "name" => "greeting", "stateMutability" => "view" } ])
+      assert_equal "greeting", reader.send(:ensure_readable!, info, "greeting")["name"]
+    end
+
+    test "allows pure functions" do
+      info = info_for([ { "type" => "function", "name" => "add", "stateMutability" => "pure" } ])
+      assert_nothing_raised { reader.send(:ensure_readable!, info, "add") }
+    end
+
+    test "rejects nonpayable (state-changing) functions" do
+      info = info_for([ { "type" => "function", "name" => "setGreeting", "stateMutability" => "nonpayable" } ])
+      assert_raises(ArgumentError) { reader.send(:ensure_readable!, info, "setGreeting") }
+    end
+
+    test "rejects payable functions" do
+      info = info_for([ { "type" => "function", "name" => "deposit", "stateMutability" => "payable" } ])
+      assert_raises(ArgumentError) { reader.send(:ensure_readable!, info, "deposit") }
+    end
+
+    test "raises for an unknown function" do
+      info = info_for([ { "type" => "function", "name" => "greeting", "stateMutability" => "view" } ])
+      assert_raises(ArgumentError) { reader.send(:ensure_readable!, info, "missing") }
     end
   end
 end

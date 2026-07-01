@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rails:
+    name: Rails (lint, security, build, test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/rails
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: packages/rails
+          bundler-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: packages/rails/yarn.lock
+
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint (RuboCop)
+        run: bin/rubocop
+
+      - name: Security — Brakeman
+        run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+
+      - name: Security — bundler-audit
+        run: bin/bundler-audit
+
+      - name: Build JavaScript
+        run: yarn build
+
+      - name: Build CSS
+        run: yarn build:css
+
+      - name: Precompile assets
+        run: bin/rails assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: "1"
+
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+        env:
+          RAILS_ENV: test
+
+      - name: Run Rails tests
+        run: bin/rails test
+        env:
+          RAILS_ENV: test
+
+  hardhat:
+    name: Hardhat tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run Hardhat tests
+        run: yarn hardhat:test
+
+  foundry:
+    name: Foundry tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Run Foundry tests
+        run: yarn foundry:test

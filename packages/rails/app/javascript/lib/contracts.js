@@ -6,22 +6,29 @@
 
 import { activeChainId } from "./config";
 
-let registryPromise = null;
+// Cache the registry per chain id — otherwise the first chain's response is
+// reused for every later chain and writes/reads target the wrong addresses.
+const registryByChain = new Map();
 
 export async function loadContracts(chainId = activeChainId()) {
-  if (!registryPromise) {
-    registryPromise = fetch(`/api/contracts?chain_id=${chainId}`, {
+  if (!registryByChain.has(chainId)) {
+    const promise = fetch(`/api/contracts?chain_id=${chainId}`, {
       headers: { Accept: "application/json" },
     })
       .then((r) => r.json())
       .then((data) => data.contracts || {})
       .catch(() => ({}));
+    registryByChain.set(chainId, promise);
   }
-  return registryPromise;
+  return registryByChain.get(chainId);
 }
 
-export function invalidateContracts() {
-  registryPromise = null;
+export function invalidateContracts(chainId) {
+  if (chainId === undefined) {
+    registryByChain.clear();
+  } else {
+    registryByChain.delete(chainId);
+  }
 }
 
 export async function getContract(name, chainId) {
