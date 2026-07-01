@@ -78,8 +78,10 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      # hardhat.config defaults to the "localhost" network; run against the
+      # in-process "hardhat" network so no external node is required.
       - name: Run Hardhat tests
-        run: yarn hardhat:test
+        run: yarn workspace @eth-on-rails/hardhat test --network hardhat
 
   foundry:
     name: Foundry tests
@@ -99,6 +101,12 @@ jobs:
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
+
+      # lib/forge-std is gitignored (installed via forge, not committed), so
+      # fetch it before compiling/testing.
+      - name: Install forge-std
+        working-directory: packages/foundry
+        run: forge install foundry-rs/forge-std
 
       - name: Run Foundry tests
         run: yarn foundry:test

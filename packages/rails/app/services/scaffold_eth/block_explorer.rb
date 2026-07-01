@@ -17,7 +17,7 @@ module ScaffoldEth
     # The most recent `count` blocks (newest first), with tx counts.
     def latest_blocks(count: 25)
       tip = latest_block_number
-      first = [tip - count + 1, 0].max
+      first = [ tip - count + 1, 0 ].max
       (first..tip).map { |n| block(n) }.compact.reverse
     end
 
@@ -29,7 +29,7 @@ module ScaffoldEth
     def latest_transactions(page: 1, per_page: 20)
       txs = collect_transactions
       total = txs.size
-      pages = [(total.to_f / per_page).ceil, 1].max
+      pages = [ (total.to_f / per_page).ceil, 1 ].max
       page = page.clamp(1, pages)
       slice = txs[((page - 1) * per_page), per_page] || []
       { transactions: slice, total: total, page: page, per_page: per_page, pages: pages }
@@ -95,7 +95,7 @@ module ScaffoldEth
     # Logs emitted by an address (best-effort; recent range only).
     def logs_for(address, lookback: SCAN_DEPTH)
       tip = latest_block_number
-      from = [tip - lookback + 1, 0].max
+      from = [ tip - lookback + 1, 0 ].max
       @client.rpc("eth_getLogs", {
         address: address,
         from_block: hex(from),
@@ -134,7 +134,7 @@ module ScaffoldEth
     # the called function for each. Contract creation = tx.to is null.
     def collect_transactions
       tip = latest_block_number
-      first = [tip - SCAN_DEPTH + 1, 0].max
+      first = [ tip - SCAN_DEPTH + 1, 0 ].max
       out = []
       tip.downto(first) do |n|
         raw = @client.rpc("eth_getBlockByNumber", hex(n), true)
