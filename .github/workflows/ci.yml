@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  rails:
+    name: Rails (lint, security, build, test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/rails
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          working-directory: packages/rails
+          bundler-cache: true
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: packages/rails/yarn.lock
+
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint (RuboCop)
+        run: bin/rubocop
+
+      - name: Security — Brakeman
+        run: bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error
+
+      - name: Security — bundler-audit
+        run: bin/bundler-audit
+
+      - name: Build JavaScript
+        run: yarn build
+
+      - name: Build CSS
+        run: yarn build:css
+
+      - name: Precompile assets
+        run: bin/rails assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE_DUMMY: "1"
+
+      # No primary DB schema/migrations exist (the app only ships the solid_*
+      # schemas and the test suite doesn't touch the primary DB), so there's no
+      # db:test:prepare step — it would fail on the missing schema.rb.
+      - name: Run Rails tests
+        run: bin/rails test
+        env:
+          RAILS_ENV: test
+
+  hardhat:
+    name: Hardhat tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No root yarn.lock is committed, so install fresh (not --frozen-lockfile)
+      # and skip setup-node's yarn cache (which requires a lockfile as its key).
+      - name: Install dependencies
+        run: yarn install
+
+      # hardhat.config defaults to the "localhost" network; run against the
+      # in-process "hardhat" network so no external node is required.
+      - name: Run Hardhat tests
+        run: yarn workspace @eth-on-rails/hardhat test --network hardhat
+
+  foundry:
+    name: Foundry tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # No root yarn.lock is committed, so install fresh (not --frozen-lockfile)
+      # and skip setup-node's yarn cache (which requires a lockfile as its key).
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      # lib/forge-std is gitignored (installed via forge, not committed), so
+      # fetch it before compiling/testing.
+      - name: Install forge-std
+        working-directory: packages/foundry
+        run: forge install foundry-rs/forge-std
+
+      - name: Run Foundry tests
+        run: yarn foundry:test

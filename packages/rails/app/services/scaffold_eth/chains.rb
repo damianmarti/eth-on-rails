@@ -19,7 +19,9 @@ module ScaffoldEth
       def as_json(*)
         {
           key: key, id: id, name: name, network: network,
-          rpcUrl: rpc, wsUrl: ws,
+          # Honor rpc_overrides so browser wagmi/AppKit traffic hits the same
+          # RPC the Rails server uses (see ScaffoldEth::Config#rpc_url_for).
+          rpcUrl: ScaffoldEth::Config.rpc_url_for(self), wsUrl: ws,
           nativeCurrency: currency,
           blockExplorer: block_explorer.to_s.empty? ? nil : block_explorer,
           color: color, testnet: testnet?, local: local?

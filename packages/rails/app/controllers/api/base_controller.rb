@@ -5,10 +5,14 @@ module Api
   # eth.rb server layer (registry, reads, events, ENS, faucet) to the browser.
   # Writes are intentionally NOT exposed here — they are signed by the wallet.
   class BaseController < ActionController::Base
-    skip_forgery_protection
+    # Read endpoints are all GET (not CSRF-checked). State-changing endpoints
+    # (e.g. the faucet drip) must keep forgery protection — they opt in via
+    # `protect_from_forgery with: :exception`, and the JS layer sends the
+    # X-CSRF-Token header. Do NOT skip forgery protection app-wide here.
 
     rescue_from StandardError, with: :render_error
     rescue_from ArgumentError, with: :render_bad_request
+    rescue_from ActionController::InvalidAuthenticityToken, with: :render_forbidden
 
     private
 
@@ -24,6 +28,10 @@ module Api
 
     def render_bad_request(error)
       render json: { error: error.message }, status: :bad_request
+    end
+
+    def render_forbidden(_error)
+      render json: { error: "Invalid or missing CSRF token" }, status: :forbidden
     end
   end
 end

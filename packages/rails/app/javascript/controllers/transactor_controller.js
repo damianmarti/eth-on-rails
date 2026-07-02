@@ -23,22 +23,52 @@ export default class extends Controller {
     }[type] || "alert-info";
 
     const icon = { loading: "⏳", success: "✅", error: "❌", warning: "⚠️", info: "ℹ️" }[type] || "ℹ️";
-    const inner = `<span>${icon}</span><span>${message}</span>` +
-      (href ? ` <a href="${href}" target="_blank" rel="noopener" class="underline">view</a>` : "");
 
-    if (el) {
-      el.className = `alert ${cls} shadow-lg`;
-      el.innerHTML = inner;
-    } else {
+    if (!el) {
       el = document.createElement("div");
-      el.className = `alert ${cls} shadow-lg`;
-      el.innerHTML = inner;
       if (id) el.dataset.toastId = id;
       this.element.appendChild(el);
     }
+    el.className = `alert ${cls} shadow-lg`;
+    this.renderInto(el, icon, message, href);
 
     if (type !== "loading" && duration) {
       setTimeout(() => el.remove(), duration);
     }
+  }
+
+  // Builds toast content from DOM nodes (never innerHTML): `message` and `href`
+  // come from wallet/API errors and must be treated as untrusted.
+  renderInto(el, icon, message, href) {
+    const iconSpan = document.createElement("span");
+    iconSpan.textContent = icon;
+    const msgSpan = document.createElement("span");
+    msgSpan.textContent = message == null ? "" : String(message);
+    const nodes = [iconSpan, msgSpan];
+
+    const safeHref = this.safeHref(href);
+    if (safeHref) {
+      const link = document.createElement("a");
+      link.href = safeHref;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.className = "underline";
+      link.textContent = "view";
+      nodes.push(document.createTextNode(" "), link);
+    }
+
+    el.replaceChildren(...nodes);
+  }
+
+  // Allow only same-origin paths or http(s) URLs; reject javascript:, data:, etc.
+  safeHref(href) {
+    if (!href) return null;
+    try {
+      const url = new URL(href, window.location.origin);
+      if (url.protocol === "http:" || url.protocol === "https:") return url.href;
+    } catch (_) {
+      return null;
+    }
+    return null;
   }
 }

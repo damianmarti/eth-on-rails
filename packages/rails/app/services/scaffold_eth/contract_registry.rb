@@ -132,7 +132,7 @@ module ScaffoldEth
       end
 
       def current_signature
-        [DEPLOYED_PATH, EXTERNAL_PATH].map { |p| File.exist?(p) ? File.mtime(p).to_f : 0 }
+        [ DEPLOYED_PATH, EXTERNAL_PATH ].map { |p| File.exist?(p) ? File.mtime(p).to_f : 0 }
       end
 
       def build_for(chain_id)

@@ -9,6 +9,20 @@ CI.run do
   step "Security: Yarn vulnerability audit", "yarn audit"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
 
+  # Build the JS/CSS bundles and verify production asset precompilation works
+  # (this is what the Docker image does at build time).
+  step "Build: JavaScript", "yarn build"
+  step "Build: CSS", "yarn build:css"
+  step "Assets: Precompile", "SECRET_KEY_BASE_DUMMY=1 bin/rails assets:precompile"
+
+  # Application tests.
+  step "Tests: Rails", "bin/rails test"
+
+  # Smart-contract tests live in sibling workspaces; run them from the repo root
+  # via the root yarn workspace scripts.
+  step "Tests: Hardhat", "yarn --cwd ../.. hardhat:test"
+  step "Tests: Foundry", "yarn --cwd ../.. foundry:test"
+
 
   # Optional: set a green GitHub commit status to unblock PR merge.
   # Requires the `gh` CLI and `gh extension install basecamp/gh-signoff`.

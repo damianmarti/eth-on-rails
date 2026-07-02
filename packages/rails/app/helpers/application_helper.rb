@@ -17,7 +17,7 @@ module ApplicationHelper
       ("bg-secondary" if active)
     ].compact.join(" ")
     link_to path, class: classes do
-      safe_join([icon, tag.span(label)].compact)
+      safe_join([ icon, tag.span(label) ].compact)
     end
   end
 

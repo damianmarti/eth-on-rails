@@ -2,7 +2,8 @@ import { Controller } from "@hotwired/stimulus";
 import { simulateContract, writeContract, waitForTransactionReceipt } from "@wagmi/core";
 import { wagmiConfig } from "../lib/wagmi";
 import { getContract } from "../lib/contracts";
-import { connectedAddress } from "../lib/account";
+import { connectedAddress, connectedChainId } from "../lib/account";
+import { activeChainId } from "../lib/config";
 import { collectArgs } from "../lib/args";
 import { notify, nextToastId } from "../lib/toast";
 
@@ -26,6 +27,15 @@ export default class extends Controller {
       return;
     }
 
+    // Resolve the contract on the app's active chain and refuse to sign if the
+    // wallet is connected to a different network — otherwise the tx would hit
+    // the wrong chain with addresses from another registry.
+    const chainId = activeChainId();
+    if (connectedChainId() !== chainId) {
+      notify("warning", `Wrong network — switch your wallet to chain ${chainId}`);
+      return;
+    }
+
     const args = collectArgs(this.element);
     const value = this.payableValue();
     const id = nextToastId();
@@ -34,7 +44,7 @@ export default class extends Controller {
     notify("loading", `Awaiting signature for ${this.functionValue}…`, { id });
 
     try {
-      const info = await getContract(this.contractValue);
+      const info = await getContract(this.contractValue, chainId);
       const base = {
         address: info.address,
         abi: info.abi,

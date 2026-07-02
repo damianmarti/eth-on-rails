@@ -35,7 +35,7 @@ module ScaffoldEth
       # eth.rb camelizes snake_case keys (from_block -> fromBlock) before sending.
       logs = @client.rpc("eth_getLogs", {
         address: info.address,
-        topics: [topic0(event_abi)],
+        topics: [ topic0(event_abi) ],
         from_block: hexify(from_block),
         to_block: hexify(to_block)
       })

@@ -33,9 +33,12 @@ module ScaffoldEth
       when "bool"
         nil # rendered inline as a select in the template
       else
-        # string, tuples, arrays -> plain text (JSON for complex types)
+        # string, tuples, arrays -> plain text (JSON for complex types).
+        # Pass tuple component metadata through so the arg parser can preserve
+        # integer precision inside tuple fields (nil for non-tuple types).
         ScaffoldEth::BaseInputComponent.new(
-          name: field_name, placeholder: sol_type, sol_type: sol_type
+          name: field_name, placeholder: sol_type, sol_type: sol_type,
+          components: @abi_input["components"]
         )
       end
     end

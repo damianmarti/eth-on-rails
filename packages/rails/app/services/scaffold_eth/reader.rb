@@ -13,6 +13,7 @@ module ScaffoldEth
     # Read a view/pure function and return the raw decoded value.
     def read(contract_name, function_name, *args)
       info = ScaffoldEth::ContractRegistry.contract!(contract_name, @chain_id)
+      ensure_readable!(info, function_name)
       @client.call(info.eth_contract, function_name.to_s, *args)
     end
 
@@ -20,7 +21,7 @@ module ScaffoldEth
     # (bigints -> strings, string -> text, bytes -> hex).
     def read_json(contract_name, function_name, *args)
       info = ScaffoldEth::ContractRegistry.contract!(contract_name, @chain_id)
-      fn = info.functions.find { |f| f["name"] == function_name.to_s }
+      fn = ensure_readable!(info, function_name)
       value = @client.call(info.eth_contract, function_name.to_s, *args)
       outputs = fn&.dig("outputs") || []
 
@@ -31,6 +32,23 @@ module ScaffoldEth
       else
         self.class.serialize(value)
       end
+    end
+
+    # Locate the function ABI and ensure it is non-mutating (view/pure). Reads
+    # go through eth_call so they can't change state, but rejecting mutating
+    # functions keeps this a true "reads only" surface and avoids exposing an
+    # unauthenticated simulation/revert path. Returns the function fragment.
+    def ensure_readable!(info, function_name)
+      fn = info.functions.find { |f| f["name"] == function_name.to_s }
+      raise ArgumentError, "Unknown function #{function_name} on #{info.name}" unless fn
+
+      mutability = fn["stateMutability"]
+      readable = %w[view pure].include?(mutability) || (mutability.nil? && fn["constant"])
+      unless readable
+        raise ArgumentError, "Function #{function_name} is not a view/pure function"
+      end
+
+      fn
     end
 
     # Recursively convert decoded ABI values into JSON-safe primitives.
